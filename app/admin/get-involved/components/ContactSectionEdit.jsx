@@ -8,7 +8,7 @@ export default function ContactSectionEdit() {
     address: "5350 Allied Blvd, Indianapolis, IN",
     subtext: "Visit and Worship with us.",
     backgroundImage: "/images/img_group_138.png",
-    contactFormEnabled: true
+    contactFormEnabled: true,
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -45,15 +45,21 @@ export default function ContactSectionEdit() {
         <div className="p-8 bg-white">
           <div
             className="h-[500px] rounded-lg p-8 bg-cover bg-center relative"
-            style={{ backgroundImage: `url(${sectionContent.backgroundImage})` }}
+            style={{
+              backgroundImage: `url(${sectionContent.backgroundImage})`,
+            }}
           >
             <div className="flex flex-col md:flex-row justify-between h-full">
               {/* Left side - sample contact form */}
               {sectionContent.contactFormEnabled && (
                 <div className="flex-1 flex flex-col gap-4 max-w-xl">
                   <div className="mb-6">
-                    <h4 className="text-lg text-white font-medium">Sample Contact Form</h4>
-                    <p className="text-white text-opacity-70">The actual form appears on the public site</p>
+                    <h4 className="text-lg text-white font-medium">
+                      Sample Contact Form
+                    </h4>
+                    <p className="text-white text-opacity-70">
+                      The actual form appears on the public site
+                    </p>
                   </div>
 
                   <div className="rounded-lg bg-white bg-opacity-10 text-white p-3 border border-white border-opacity-20">
@@ -91,9 +97,7 @@ export default function ContactSectionEdit() {
                 <p className="text-xl text-white mb-2">
                   {sectionContent.address}
                 </p>
-                <p className="text-xl text-white">
-                  {sectionContent.subtext}
-                </p>
+                <p className="text-xl text-white">{sectionContent.subtext}</p>
               </div>
             </div>
           </div>
@@ -168,8 +172,12 @@ export default function ContactSectionEdit() {
                 onChange={handleCheckboxChange}
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               />
-              <label htmlFor="contactFormEnabled" className="ml-2 block text-sm text-gray-700">
-                Display contact form (Note: Form functionality is managed automatically)
+              <label
+                htmlFor="contactFormEnabled"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                Display contact form (Note: Form functionality is managed
+                automatically)
               </label>
             </div>
           </div>

@@ -129,87 +129,67 @@ export default function AdminDashboard() {
       {/* Pages List */}
       <div className="space-y-8">
         {pages.map((page) => (
-          <Link href={page.link} key={page.id}>
-            <div className="border border-gray-200 overflow-hidden cursor-pointer group">
-              <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row">
-                {/* Thumbnail - Full width on mobile, left side on md+ */}
-                <div className="sm:w-full md:w-2/6 lg:w-2/6 relative bg-black h-[250px]">
-                  {page.thumbnail && (
-                    <div className="relative h-full">
-                      <Image
-                        src={page.thumbnail}
-                        alt={page.title}
-                        fill
-                        style={{ objectFit: "contain" }}
-                      />
+          <div key={page.id} className="border border-gray-200 overflow-hidden">
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row">
+              {/* Thumbnail - Full width on mobile, left side on md+ */}
+              <div className="sm:w-full md:w-2/6 lg:w-2/6 relative bg-black h-[250px]">
+                {page.thumbnail && (
+                  <div className="relative h-full">
+                    <Image
+                      src={page.thumbnail}
+                      alt={page.title}
+                      fill
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Details */}
+              <div className="sm:w-full md:w-4/6 lg:4/6 p-8 flex flex-col">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-2xl font-medium text-gray-900">
+                      {page.title}
+                    </h2>
+                    <p className="text-gray-600 mt-2 text-base">
+                      {page.description}
+                    </p>
+                    <div className="mt-2 text-xs text-blue-700 font-semibold">
+                      Admin Route:{" "}
+                      <span className="font-mono">{page.link}</span>
                     </div>
-                  )}
-                </div>
-
-                {/* Details */}
-                <div className="sm:w-full md:w-4/6 lg:4/6 p-8 flex flex-col">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-2xl font-medium text-gray-900">
-                        {page.title}
-                      </h2>
-                      <p className="text-gray-600 mt-2 text-base">
-                        {page.description}
-                      </p>
-                      <div className="mt-2 text-xs text-blue-700 font-semibold">
-                        Admin Route:{" "}
-                        <span className="font-mono">{page.link}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Website Page:{" "}
-                        <span className="font-mono">{page.pagePath}</span>
-                      </div>
-
-                      <div className="mt-auto pt-4 flex flex-col gap-2">
-                        {/* <div className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium">
-                      {page.type}
-                    </div> */}
-                        <a
-                          href={page.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 inline-block px-4 py-4 bg-white border border-slate-300 text-slate-700 text-xs font-medium transition-colors w-fit"
-                        >
-                          Visit Website Page
-                        </a>
-                      </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Website Page:{" "}
+                      <span className="font-mono">{page.pagePath}</span>
                     </div>
 
-                    <div className="flex items-center">
-                      {/* Arrow top right icon */}
+                    <div className="mt-auto pt-4 flex gap-4">
+                      <Link
+                        href={page.link}
+                        className="mt-2 inline-block px-4 py-4 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium transition-colors w-fit"
+                      >
+                        Manage Content
+                      </Link>
+
                       <a
                         href={page.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-blue-700 p-1 absolute top-2 right-22"
-                        title="Go to live page"
+                        className="mt-2 inline-block px-4 py-4 bg-white border border-slate-300 text-slate-700 text-xs font-medium transition-colors w-fit"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          className="h-6 w-6"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 17L17 7M7 7h10v10"
-                          />
-                        </svg>
+                        Visit Website Page
                       </a>
                     </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    {/* Arrow icon removed to avoid nested anchors */}
                   </div>
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
