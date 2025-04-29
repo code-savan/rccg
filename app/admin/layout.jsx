@@ -47,7 +47,7 @@ export default function AdminLayout({ children }) {
 
       {/* Top Navigation Bar */}
       <header className="border-b border-gray-200">
-        <div className=" mx-auto px-16 md:px-24 lg:px-32 py-4 flex items-center justify-between">
+        <div className=" mx-auto sm:px-3 md:px-24 lg:px-32 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/admin">
               <div className="text-gray-700">
@@ -90,7 +90,7 @@ export default function AdminLayout({ children }) {
       </header>
 
       {/* Main Content */}
-      <main className=" mx-auto px-16 md:px-24 lg:px-32 py-8">{children}</main>
+      <main className=" mx-auto sm:px-3 md:px-24 lg:px-32 py-8">{children}</main>
     </div>
   );
 }

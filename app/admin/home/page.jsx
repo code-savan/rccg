@@ -16,8 +16,8 @@ export default function AdminHomePage() {
 
   return (
     <div>
-<div>
-<div className="mb-8 flex justify-between items-center">
+      <div>
+        <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-[18px] font-semibold text-gray-900">
               Home Page
@@ -58,7 +58,7 @@ export default function AdminHomePage() {
             </a>
           </div>
         </div>
-</div>
+      </div>
 
       {/* Page Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200">

@@ -131,12 +131,9 @@ export default function AdminDashboard() {
         {pages.map((page) => (
           <Link href={page.link} key={page.id}>
             <div className="border border-gray-200 overflow-hidden cursor-pointer group">
-              <div className="flex">
-                {/* Thumbnail */}
-                <div
-                  className="w-2/6 relative bg-black"
-                  //   style={{ height: "220px" }}
-                >
+              <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row">
+                {/* Thumbnail - Full width on mobile, left side on md+ */}
+                <div className="sm:w-full md:w-2/6 lg:w-2/6 relative bg-black h-[250px]">
                   {page.thumbnail && (
                     <div className="relative h-full">
                       <Image
@@ -150,7 +147,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Details */}
-                <div className="w-4/6 p-8  flex flex-col">
+                <div className="sm:w-full md:w-4/6 lg:4/6 p-8 flex flex-col">
                   <div className="flex justify-between items-start">
                     <div>
                       <h2 className="text-2xl font-medium text-gray-900">
@@ -189,7 +186,7 @@ export default function AdminDashboard() {
                         href={page.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-blue-700 p-1"
+                        className="text-gray-500 hover:text-blue-700 p-1 absolute top-2 right-22"
                         title="Go to live page"
                       >
                         <svg
