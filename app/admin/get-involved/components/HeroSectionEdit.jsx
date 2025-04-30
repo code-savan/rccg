@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import ImageUpload from "../../../../components/@admin/ImageUpload";
 
 export default function HeroSectionEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -41,6 +42,14 @@ export default function HeroSectionEdit() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handler for image upload completion
+  const handleImageUploaded = (imageUrl) => {
+    setSectionContent((prev) => ({
+      ...prev,
+      backgroundImage: imageUrl,
+    }));
   };
 
   const handleSave = async () => {
@@ -155,15 +164,14 @@ export default function HeroSectionEdit() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Background Image Path
+                Background Image
               </label>
-              <input
-                type="text"
-                name="backgroundImage"
-                value={sectionContent.backgroundImage}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="/images/background.jpg"
+
+              {/* Use the updated ImageUpload component which handles both upload and preview */}
+              <ImageUpload
+                section="hero"
+                onImageUploaded={handleImageUploaded}
+                existingImageUrl={sectionContent.backgroundImage}
               />
             </div>
           </div>

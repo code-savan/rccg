@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import ImageUpload from "../../../../components/@admin/ImageUpload";
 
 export default function ContactSectionEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -16,6 +17,14 @@ export default function ContactSectionEdit() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handler for image upload completion
+  const handleImageUploaded = (imageUrl) => {
+    setSectionContent((prev) => ({
+      ...prev,
+      backgroundImage: imageUrl,
+    }));
   };
 
   const handleCheckboxChange = (e) => {
@@ -149,15 +158,14 @@ export default function ContactSectionEdit() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Background Image Path
+                Background Image
               </label>
-              <input
-                type="text"
-                name="backgroundImage"
-                value={sectionContent.backgroundImage}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="/images/background.jpg"
+
+              {/* Use the updated ImageUpload component which handles both upload and preview */}
+              <ImageUpload
+                section="contact"
+                onImageUploaded={handleImageUploaded}
+                existingImageUrl={sectionContent.backgroundImage}
               />
             </div>
           </div>

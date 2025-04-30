@@ -5,6 +5,7 @@ import {
   fetchQASection,
   updateQASection,
 } from "@/lib/services/getInvolvedService";
+import ImageUpload from "../../../../components/@admin/ImageUpload";
 
 export default function QASectionEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -46,6 +47,14 @@ export default function QASectionEdit() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handler for image upload completion
+  const handleImageUploaded = (imageUrl) => {
+    setSectionContent((prev) => ({
+      ...prev,
+      bibleVerseBackgroundImage: imageUrl,
+    }));
   };
 
   const handleSave = async () => {
@@ -227,15 +236,14 @@ export default function QASectionEdit() {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bible Verse Background Image Path
+                Bible Verse Background Image
               </label>
-              <input
-                type="text"
-                name="bibleVerseBackgroundImage"
-                value={sectionContent.bibleVerseBackgroundImage}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="/images/background.jpg"
+
+              {/* Use the updated ImageUpload component which handles both upload and preview */}
+              <ImageUpload
+                section="qa"
+                onImageUploaded={handleImageUploaded}
+                existingImageUrl={sectionContent.bibleVerseBackgroundImage}
               />
             </div>
           </div>
