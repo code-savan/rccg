@@ -20,7 +20,8 @@ export async function GET() {
       // If no data found, return default values
       if (error.code === "PGRST116") {
         const defaultData = {
-          monthly_programs_heading: defaultServicesEventsData.monthly_programs_heading,
+          monthly_programs_heading:
+            defaultServicesEventsData.monthly_programs_heading,
           monthly_programs: defaultServicesEventsData.monthly_programs,
         };
         return NextResponse.json(mapDBToMonthlyProgramsSection(defaultData));
@@ -32,11 +33,23 @@ export async function GET() {
       );
     }
 
+    // Ensure data is properly formatted
+    const sanitizedData = {
+      monthly_programs_heading:
+        data?.monthly_programs_heading ||
+        defaultServicesEventsData.monthly_programs_heading,
+      monthly_programs:
+        data?.monthly_programs || defaultServicesEventsData.monthly_programs,
+    };
+
     // Map database fields to component state
-    const mappedData = mapDBToMonthlyProgramsSection(data);
+    const mappedData = mapDBToMonthlyProgramsSection(sanitizedData);
     return NextResponse.json(mappedData);
   } catch (error) {
-    console.error("Server error fetching monthly programs section data:", error);
+    console.error(
+      "Server error fetching monthly programs section data:",
+      error
+    );
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -85,17 +98,24 @@ export async function PUT(request) {
           // Add default values for other sections
           welcome_heading: defaultServicesEventsData.welcome_heading,
           welcome_subheading: defaultServicesEventsData.welcome_subheading,
-          welcome_background_image: defaultServicesEventsData.welcome_background_image,
+          welcome_background_image:
+            defaultServicesEventsData.welcome_background_image,
           church_info_heading: defaultServicesEventsData.church_info_heading,
           church_info_date: defaultServicesEventsData.church_info_date,
-          church_info_bible_verse: defaultServicesEventsData.church_info_bible_verse,
-          church_info_bible_reference: defaultServicesEventsData.church_info_bible_reference,
+          church_info_bible_verse:
+            defaultServicesEventsData.church_info_bible_verse,
+          church_info_bible_reference:
+            defaultServicesEventsData.church_info_bible_reference,
           church_info_contacts: defaultServicesEventsData.church_info_contacts,
-          church_info_background_image: defaultServicesEventsData.church_info_background_image,
-          weekly_programs_heading: defaultServicesEventsData.weekly_programs_heading,
-          weekly_programs_description: defaultServicesEventsData.weekly_programs_description,
+          church_info_background_image:
+            defaultServicesEventsData.church_info_background_image,
+          weekly_programs_heading:
+            defaultServicesEventsData.weekly_programs_heading,
+          weekly_programs_description:
+            defaultServicesEventsData.weekly_programs_description,
           weekly_programs: defaultServicesEventsData.weekly_programs,
-          upcoming_events_heading: defaultServicesEventsData.upcoming_events_heading,
+          upcoming_events_heading:
+            defaultServicesEventsData.upcoming_events_heading,
           upcoming_events: defaultServicesEventsData.upcoming_events,
         })
         .select("monthly_programs_heading, monthly_programs");
@@ -115,7 +135,10 @@ export async function PUT(request) {
     const mappedData = mapDBToMonthlyProgramsSection(data[0]);
     return NextResponse.json(mappedData);
   } catch (error) {
-    console.error("Server error updating monthly programs section data:", error);
+    console.error(
+      "Server error updating monthly programs section data:",
+      error
+    );
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -37,8 +37,20 @@ export async function GET() {
       );
     }
 
+    // Ensure data is properly formatted
+    const sanitizedData = {
+      weekly_programs_heading:
+        data?.weekly_programs_heading ||
+        defaultServicesEventsData.weekly_programs_heading,
+      weekly_programs_description:
+        data?.weekly_programs_description ||
+        defaultServicesEventsData.weekly_programs_description,
+      weekly_programs:
+        data?.weekly_programs || defaultServicesEventsData.weekly_programs,
+    };
+
     // Map database fields to component state
-    const mappedData = mapDBToWeeklyProgramsSection(data);
+    const mappedData = mapDBToWeeklyProgramsSection(sanitizedData);
     return NextResponse.json(mappedData);
   } catch (error) {
     console.error("Server error fetching weekly programs section data:", error);

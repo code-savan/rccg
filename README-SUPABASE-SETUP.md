@@ -22,20 +22,21 @@ Replace `your-project-url` and `your-anon-key` with the values from your Supabas
 
 1. Log in to your Supabase dashboard and navigate to the Storage section.
 2. Create the following buckets:
-   - `get_involved_files`: For storing files related to the Get Involved page
-   - `services_events_files`: For storing files related to the Services & Events page
+   - `get-involved-files`: For storing files related to the Get Involved page
+   - `services-events-files`: For storing files related to the Services & Events page
+   - `about-us-files`: For storing files related to the About Us page
 
 3. Set up RLS (Row Level Security) policies for each bucket:
    - For publicly viewable images, add the following policy for anonymous access:
 
    ```sql
-   CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id IN ('get_involved_files', 'services_events_files'));
+   CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id IN ('get-involved-files', 'services-events-files', 'about-us-files'));
    ```
 
    - For authenticated users (admins) to upload files:
 
    ```sql
-   CREATE POLICY "Authenticated Users Can Upload" ON storage.objects FOR INSERT USING (bucket_id IN ('get_involved_files', 'services_events_files') AND auth.role() = 'authenticated');
+   CREATE POLICY "Authenticated Users Can Upload" ON storage.objects FOR INSERT USING (bucket_id IN ('get-involved-files', 'services-events-files', 'about-us-files') AND auth.role() = 'authenticated');
    ```
 
 ## Database Tables Setup
@@ -262,6 +263,218 @@ INSERT INTO services_events (
 );
 ```
 
+### About Us Table
+
+1. Run the following SQL to create the `about_us` table:
+
+```sql
+CREATE TABLE about_us (
+  id SERIAL PRIMARY KEY,
+  hero_heading TEXT NOT NULL,
+  hero_subheading TEXT NOT NULL,
+  hero_background_image TEXT NOT NULL,
+  about_text_heading TEXT NOT NULL,
+  about_text_content TEXT NOT NULL,
+  history_heading TEXT NOT NULL,
+  history_content TEXT NOT NULL,
+  history_image TEXT NOT NULL,
+  ministers_heading TEXT NOT NULL,
+  ministers_description TEXT NOT NULL,
+  ministers JSONB NOT NULL,
+  church_ministers_heading TEXT NOT NULL,
+  church_ministers_description TEXT NOT NULL,
+  church_ministers JSONB NOT NULL,
+  department_heads_heading TEXT NOT NULL,
+  department_heads_description TEXT NOT NULL,
+  department_heads JSONB NOT NULL,
+  departments_heading TEXT NOT NULL,
+  departments_description TEXT NOT NULL,
+  departments JSONB NOT NULL,
+  nextgen_ministry_title TEXT NOT NULL,
+  nextgen_ministry_description TEXT NOT NULL,
+  nextgen_ministry_image TEXT NOT NULL,
+  nextgen_ministers_heading TEXT NOT NULL,
+  nextgen_ministers_description TEXT NOT NULL,
+  nextgen_ministers JSONB NOT NULL,
+  worship_with_us_heading TEXT NOT NULL,
+  worship_with_us_description TEXT NOT NULL,
+  worship_with_us_schedule JSONB NOT NULL,
+  worship_with_us_location TEXT NOT NULL,
+  worship_with_us_image TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add default data
+INSERT INTO about_us (
+  hero_heading,
+  hero_subheading,
+  hero_background_image,
+  about_text_heading,
+  about_text_content,
+  history_heading,
+  history_content,
+  history_image,
+  ministers_heading,
+  ministers_description,
+  ministers,
+  church_ministers_heading,
+  church_ministers_description,
+  church_ministers,
+  department_heads_heading,
+  department_heads_description,
+  department_heads,
+  departments_heading,
+  departments_description,
+  departments,
+  nextgen_ministry_title,
+  nextgen_ministry_description,
+  nextgen_ministry_image,
+  nextgen_ministers_heading,
+  nextgen_ministers_description,
+  nextgen_ministers,
+  worship_with_us_heading,
+  worship_with_us_description,
+  worship_with_us_schedule,
+  worship_with_us_location,
+  worship_with_us_image
+) VALUES (
+  'Welcome to RCCG\nRod of God Parish',
+  'A place to grow in faith and community.',
+  '/images/hero.jpeg',
+  'ABOUT OUR CHURCH',
+  'RCCG Rod of God Parish is a vibrant, Spirit-filled church committed to building a community of believers passionate about God and dedicated to making a positive impact in Indianapolis and beyond. Our church is part of the Redeemed Christian Church of God global network and upholds its values and mission.\n\nOur services combine powerful worship, prayer, and Biblical teaching in a welcoming environment where everyone belongs. We believe in nurturing spiritual growth at every age and life stage.',
+  'OUR HISTORY',
+  'RCCG Rod of God Parish began as a small prayer group in Indianapolis in 2018. Through God''s grace and the dedication of our founding members, we''ve grown into a thriving spiritual family serving our community.\n\nOver the years, we''ve remained committed to our founding vision of being a church where God''s Word is taught with clarity and where all people can find belonging, purpose, and spiritual transformation.',
+  '/images/history.jpeg',
+  'OUR MINISTERS',
+  'Meet our dedicated spiritual leaders who serve and guide our congregation with wisdom and compassion.',
+  '[
+    {
+      "id": 1,
+      "name": "Pastor John Smith",
+      "role": "Senior Pastor",
+      "bio": "Pastor John has served in ministry for over 20 years and is passionate about equipping believers to live out their faith.",
+      "image": "/images/minister1.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Pastor Mary Johnson",
+      "role": "Associate Pastor",
+      "bio": "Pastor Mary leads our women''s ministry and counseling programs, bringing comfort and wisdom to many.",
+      "image": "/images/minister2.jpeg"
+    }
+  ]',
+  'CHURCH MINISTERS',
+  'Our church ministers lead various ministries and serve our congregation in specialized areas.',
+  '[
+    {
+      "id": 1,
+      "name": "Deacon Michael Williams",
+      "role": "Worship Leader",
+      "bio": "Michael has led our worship ministry for 5 years, creating an atmosphere of praise and devotion.",
+      "image": "/images/church-minister1.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Sister Rebecca Taylor",
+      "role": "Children''s Ministry Director",
+      "bio": "Rebecca brings creativity and Biblical knowledge to our children''s programs.",
+      "image": "/images/church-minister2.jpeg"
+    }
+  ]',
+  'DEPARTMENT HEADS',
+  'Our department heads coordinate various functions to ensure the smooth operation of our church.',
+  '[
+    {
+      "id": 1,
+      "name": "Brother Daniel Clark",
+      "role": "Technical Department Head",
+      "bio": "Daniel oversees our audio-visual systems and online presence.",
+      "image": "/images/dept-head1.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Sister Jennifer Adams",
+      "role": "Hospitality Department Head",
+      "bio": "Jennifer coordinates our welcoming team and ensures visitors feel at home.",
+      "image": "/images/dept-head2.jpeg"
+    }
+  ]',
+  'OUR DEPARTMENTS',
+  'Our church operates through various departments, each playing a vital role in our ministry.',
+  '[
+    {
+      "id": 1,
+      "name": "Worship Department",
+      "description": "Leads the congregation in praise and worship during services and events.",
+      "image": "/images/dept1.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Children''s Department",
+      "description": "Provides age-appropriate spiritual education and activities for children.",
+      "image": "/images/dept2.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "Ushering Department",
+      "description": "Creates an orderly, welcoming atmosphere for all church services.",
+      "image": "/images/dept3.jpeg"
+    }
+  ]',
+  'THE NEXT GEN MINISTRY',
+  'At RCCG Rod of God Parish, our Youth Church is a vibrant community where young people grow in faith, purpose, and fellowship. Join us and be part of a movement for God!',
+  '/images/hero.jpeg',
+  'NEXTGEN MINISTERS',
+  'Our youth leaders guide and mentor the next generation of believers.',
+  '[
+    {
+      "id": 1,
+      "name": "Brother James Wilson",
+      "role": "Youth Pastor",
+      "bio": "James has a heart for young people and helps them navigate faith in today''s world.",
+      "image": "/images/youth-minister1.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "Sister Sarah Brown",
+      "role": "Young Adults Coordinator",
+      "bio": "Sarah creates meaningful programs for college students and young professionals.",
+      "image": "/images/youth-minister2.jpeg"
+    }
+  ]',
+  'WORSHIP WITH US',
+  'Join us for our weekly services and experience the presence of God.',
+  '[
+    {
+      "id": 1,
+      "day": "Sunday",
+      "services": [
+        { "id": 101, "time": "9:00 AM", "name": "Sunday School" },
+        { "id": 102, "time": "10:30 AM", "name": "Main Service" }
+      ]
+    },
+    {
+      "id": 2,
+      "day": "Wednesday",
+      "services": [
+        { "id": 201, "time": "7:00 PM", "name": "Bible Study" }
+      ]
+    },
+    {
+      "id": 3,
+      "day": "Friday",
+      "services": [
+        { "id": 301, "time": "7:00 PM", "name": "Prayer Meeting" }
+      ]
+    }
+  ]',
+  '5350 Allied Blvd, Indianapolis, IN',
+  '/images/sanctuary.jpeg'
+);
+```
+
 ## Testing the Setup
 
 1. After completing the setup, run your development server:
@@ -273,6 +486,7 @@ npm run dev
 2. Navigate to the admin pages to verify that the data is being loaded correctly:
    - `/admin/get-involved`: For the Get Involved page
    - `/admin/services-events`: For the Services & Events page
+   - `/admin/about-us`: For the About Us page
 
 3. Try uploading an image and saving changes to ensure that the storage buckets and database tables are working correctly.
 
@@ -289,4 +503,4 @@ If you encounter any issues:
 
 - The application assumes that you have a `public/images` directory with the placeholder images referenced in the default data.
 - All text fields that contain line breaks use the `\n` character as a delimiter.
-- The JSON fields (contacts, weekly_programs, monthly_programs, upcoming_events) are stored as JSONB for better performance.
+- The JSON fields (contacts, weekly_programs, monthly_programs, upcoming_events, ministers, etc.) are stored as JSONB for better performance.

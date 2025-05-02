@@ -1,36 +1,57 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
+// import { toast } from "react-hot-toast";
+// import {
+//   fetchMinistersSection,
+//   updateMinistersSection,
+// } from "@/lib/services/aboutUsService";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function MinistersEdit() {
   const [sectionContent, setSectionContent] = useState({
     heading: "Our Ministers",
     description:
-      'Join us as we celebrate the beginning of forever. With love in their hearts and joy to share, Nina and Chris invite you to witness their journey as they say "I do."',
+      "Meet our dedicated spiritual leaders who serve and guide our congregation with wisdom and compassion.",
     ministers: [
       {
         id: 1,
-        name: "Pastor Bolanle Sowole",
-        role: "Minister",
-        image: "img_dsc_9310.png",
+        name: "Pastor J.K Balogun",
+        role: "Head Pastor",
+        image: "/images/img_dsc_5797.png",
       },
       {
         id: 2,
-        name: "Sister Omolade Babalola",
-        role: "Minister",
-        image: "img_dsc_9297.png",
-      },
-      {
-        id: 3,
-        name: "Bro Jide Akinsole",
-        role: "Minister",
-        image: "img_dsc_9242.png",
+        name: "Pastor(Mrs) F.O Balogun",
+        role: "Head Pastor",
+        image: "/images/img_dsc_9587.png",
       },
     ],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingMinisterId, setEditingMinisterId] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Comment out API fetch
+  // useEffect(() => {
+  //   async function fetchSectionData() {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await fetchMinistersSection();
+  //       setSectionContent(data);
+  //     } catch (error) {
+  //       console.error("Error fetching Ministers section data:", error);
+  //       toast.error("Failed to load Ministers section data");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+
+  //   fetchSectionData();
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,13 +68,29 @@ export default function MinistersEdit() {
     }));
   };
 
+  const handleImageChange = (id, imageUrl) => {
+    setSectionContent((prev) => ({
+      ...prev,
+      ministers: prev.ministers.map((minister) =>
+        minister.id === id ? { ...minister, image: imageUrl } : minister
+      ),
+    }));
+  };
+
   const handleAddMinister = () => {
+    const newId =
+      sectionContent.ministers.length > 0
+        ? Math.max(...sectionContent.ministers.map((m) => m.id)) + 1
+        : 1;
+
     const newMinister = {
-      id: Math.max(0, ...sectionContent.ministers.map((m) => m.id)) + 1,
+      id: newId,
       name: "",
       role: "",
+      bio: "",
       image: "",
     };
+
     setSectionContent((prev) => ({
       ...prev,
       ministers: [...prev.ministers, newMinister],
@@ -70,10 +107,41 @@ export default function MinistersEdit() {
   };
 
   const handleSave = () => {
-    setIsEditing(false);
-    setEditingMinisterId(null);
-    console.log("Saved section content:", sectionContent);
+    // Comment out API save
+    setIsSaving(true);
+    // try to simulate saving
+    setTimeout(() => {
+      console.log("Saved section content:", sectionContent);
+      setIsEditing(false);
+      setEditingMinisterId(null);
+      setIsSaving(false);
+      alert("Ministers section saved successfully");
+    }, 1000);
+
+    // try {
+    //   setIsSaving(true);
+    //   await updateMinistersSection(sectionContent);
+    //   setIsEditing(false);
+    //   setEditingMinisterId(null);
+    //   toast.success("Ministers section updated successfully");
+    // } catch (error) {
+    //   console.error("Error saving Ministers section:", error);
+    //   toast.error("Failed to update Ministers section");
+    // } finally {
+    //   setIsSaving(false);
+    // }
   };
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+  //       <div className="animate-pulse">
+  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+  //         <div className="h-40 bg-gray-200 rounded"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -85,6 +153,7 @@ export default function MinistersEdit() {
             setEditingMinisterId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
@@ -100,24 +169,29 @@ export default function MinistersEdit() {
               {sectionContent.description}
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-1 grid-cols-2 gap-6">
               {sectionContent.ministers.map((minister) => (
                 <div
                   key={minister.id}
-                  className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200"
+                  className="rounded-[22px] overflow-hidden border border-gray-200"
                 >
-                  <div className="h-64 bg-gray-200 relative">
+                  <div className="relative h-[500px]">
                     {minister.image && (
-                      <img
-                        src={`/images/${minister.image}`}
+                      <Image
+                        src={minister.image}
                         alt={minister.name}
                         className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     )}
                   </div>
                   <div className="p-4">
                     <h3 className="font-medium text-lg">{minister.name}</h3>
                     <p className="text-gray-600">{minister.role}</p>
+                    {minister.bio && (
+                      <p className="text-gray-600 mt-2">{minister.bio}</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -163,6 +237,7 @@ export default function MinistersEdit() {
                   <button
                     onClick={handleAddMinister}
                     className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={isSaving}
                   >
                     Add Minister
                   </button>
@@ -177,10 +252,12 @@ export default function MinistersEdit() {
                       <div className="flex items-center mb-2">
                         <div className="h-12 w-12 bg-gray-200 rounded-full overflow-hidden mr-3">
                           {minister.image && (
-                            <img
-                              src={`/images/${minister.image}`}
+                            <Image
+                              src={minister.image}
                               alt={minister.name}
                               className="w-full h-full object-cover"
+                              width={48}
+                              height={48}
                             />
                           )}
                         </div>
@@ -195,12 +272,14 @@ export default function MinistersEdit() {
                         <button
                           onClick={() => setEditingMinisterId(minister.id)}
                           className="px-3 py-1.5 text-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                          disabled={isSaving}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDeleteMinister(minister.id)}
                           className="px-3 py-1.5 text-sm border border-red-200 text-red-600 rounded-md hover:bg-red-50"
+                          disabled={isSaving}
                         >
                           Delete
                         </button>
@@ -213,9 +292,10 @@ export default function MinistersEdit() {
               <div className="flex justify-end pt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </>
@@ -236,6 +316,7 @@ export default function MinistersEdit() {
                 <button
                   onClick={() => setEditingMinisterId(null)}
                   className="text-gray-500 hover:text-gray-700"
+                  disabled={isSaving}
                 >
                   &times;
                 </button>
@@ -257,6 +338,7 @@ export default function MinistersEdit() {
                     onChange={(e) => handleMinisterChange(e, editingMinisterId)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Full name"
+                    disabled={isSaving}
                   />
                 </div>
 
@@ -275,37 +357,61 @@ export default function MinistersEdit() {
                     onChange={(e) => handleMinisterChange(e, editingMinisterId)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="e.g. Minister, Pastor, etc."
+                    disabled={isSaving}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image Filename
+                    Bio (Optional)
                   </label>
-                  <input
-                    type="text"
-                    name="image"
+                  <textarea
+                    name="bio"
                     value={
+                      sectionContent.ministers.find(
+                        (m) => m.id === editingMinisterId
+                      )?.bio || ""
+                    }
+                    onChange={(e) => handleMinisterChange(e, editingMinisterId)}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Brief biography"
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Minister Image
+                  </label>
+                  <ImageUpload
+                    existingImageUrl={
                       sectionContent.ministers.find(
                         (m) => m.id === editingMinisterId
                       )?.image || ""
                     }
-                    onChange={(e) => handleMinisterChange(e, editingMinisterId)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. minister-image.jpg"
+                    onImageUploaded={(imageUrl) =>
+                      handleImageChange(editingMinisterId, imageUrl)
+                    }
+                    section="about-us/ministers"
+                    disabled={isSaving}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter the filename only. Images should be in the
-                    public/images directory.
-                  </p>
                 </div>
 
                 <div className="flex justify-end pt-6">
                   <button
-                    onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    onClick={() => setEditingMinisterId(null)}
+                    className="px-6 py-2 mr-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                    disabled={isSaving}
                   >
-                    Save Minister
+                    Back to List
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Save All Changes"}
                   </button>
                 </div>
               </div>

@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  fetchWeeklyProgramsSection,
+  updateWeeklyProgramsSection,
+} from "@/lib/services/servicesEventsService";
+import { formatDisplayText } from "@/lib/servicesEventsFormData";
 
 export default function WeeklyProgramsEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -40,6 +45,27 @@ export default function WeeklyProgramsEdit() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingProgramId, setEditingProgramId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchWeeklyProgramsSection();
+        setSectionContent(data);
+      } catch (err) {
+        console.error("Error fetching weekly programs section data:", err);
+        setError("Failed to load content. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,12 +108,38 @@ export default function WeeklyProgramsEdit() {
     setEditingProgramId(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+
+      const updatedData = await updateWeeklyProgramsSection(sectionContent);
+      setSectionContent(updatedData);
     setIsEditing(false);
     setEditingProgramId(null);
-    console.log("Saved weekly programs content:", sectionContent);
-    // API call would go here
+    } catch (err) {
+      console.error("Error saving weekly programs section data:", err);
+      setError("Failed to save changes. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="font-medium text-gray-800">Weekly Programs Section</h3>
+        </div>
+        <div className="p-8 bg-white flex justify-center items-center">
+          <div className="animate-pulse text-center">
+            <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-40 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -99,17 +151,24 @@ export default function WeeklyProgramsEdit() {
             setEditingProgramId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
 
       {!isEditing ? (
         <div className="p-8 bg-white">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-semibold whitespace-pre-line">
-                {sectionContent.heading}
+                {formatDisplayText(sectionContent.heading)}
               </h2>
               <p className="mt-4 text-gray-600">{sectionContent.description}</p>
             </div>
@@ -127,7 +186,7 @@ export default function WeeklyProgramsEdit() {
                       {program.title}
                     </h4>
                     <p className="text-gray-600 whitespace-pre-line mb-6">
-                      {program.description}
+                      {formatDisplayText(program.description)}
                     </p>
                   </div>
                   <div className="space-y-3">
@@ -255,12 +314,6 @@ export default function WeeklyProgramsEdit() {
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
                           <span className="font-medium text-gray-700">
-                            Title:
-                          </span>{" "}
-                          {program.title}
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700">
                             Location:
                           </span>{" "}
                           {program.location}
@@ -280,56 +333,46 @@ export default function WeeklyProgramsEdit() {
                       </div>
                     </div>
                   ))}
-                </div>
               </div>
 
-              <div className="flex justify-end pt-6">
+                <div className="flex justify-end pt-4 mt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
                 >
-                  Save Changes
+                    {isSaving ? "Saving..." : "Save Changes"}
                 </button>
+                </div>
               </div>
             </>
           ) : (
-            <div className="max-w-2xl">
+            <div>
               <div className="flex justify-between items-center mb-6">
-                <h4 className="font-medium text-gray-900">
-                  {sectionContent.weeklyPrograms.find(
-                    (p) => p.id === editingProgramId
-                  )?.title
-                    ? `Edit Program: ${
-                        sectionContent.weeklyPrograms.find(
-                          (p) => p.id === editingProgramId
-                        ).title
-                      }`
-                    : "Add New Program"}
-                </h4>
+                <h4 className="font-medium text-gray-900">Edit Program</h4>
                 <button
                   onClick={() => setEditingProgramId(null)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
                 >
-                  &times;
+                  Back to List
                 </button>
               </div>
 
-              <div className="space-y-4">
+              {sectionContent.weeklyPrograms
+                .filter((program) => program.id === editingProgramId)
+                .map((program) => (
+                  <div key={program.id} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Program Title
+                        Title
                   </label>
                   <input
                     type="text"
                     name="title"
-                    value={
-                      sectionContent.weeklyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.title || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                        value={program.title}
+                        onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. Sunday Prayer Meeting"
+                        placeholder="Program title"
                   />
                 </div>
 
@@ -339,18 +382,15 @@ export default function WeeklyProgramsEdit() {
                   </label>
                   <textarea
                     name="description"
-                    value={
-                      sectionContent.weeklyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.description || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                        value={program.description}
+                        onChange={(e) => handleProgramChange(e, program.id)}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Program description"
                   />
                 </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Location
@@ -358,14 +398,10 @@ export default function WeeklyProgramsEdit() {
                   <input
                     type="text"
                     name="location"
-                    value={
-                      sectionContent.weeklyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.location || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                          value={program.location}
+                          onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. Parish House Indianapolis."
+                          placeholder="Program location"
                   />
                 </div>
 
@@ -376,12 +412,8 @@ export default function WeeklyProgramsEdit() {
                   <input
                     type="text"
                     name="day"
-                    value={
-                      sectionContent.weeklyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.day || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                          value={program.day}
+                          onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="e.g. Sundays"
                   />
@@ -394,26 +426,25 @@ export default function WeeklyProgramsEdit() {
                   <input
                     type="text"
                     name="time"
-                    value={
-                      sectionContent.weeklyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.time || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                          value={program.time}
+                          onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. 9am – 9:30am"
+                          placeholder="e.g. 9:30am – 10:30am"
                   />
+                      </div>
                 </div>
 
-                <div className="flex justify-end pt-6">
+                    <div className="flex justify-end pt-4">
                   <button
                     onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                        disabled={isSaving}
                   >
-                    Save Program
+                        {isSaving ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               </div>
+                ))}
             </div>
           )}
         </div>

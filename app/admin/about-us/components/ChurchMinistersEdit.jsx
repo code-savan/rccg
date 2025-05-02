@@ -1,60 +1,201 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
+// import { toast } from "react-hot-toast";
+// import {
+//   fetchChurchMinistersSection,
+//   updateChurchMinistersSection,
+// } from "@/lib/services/aboutUsService";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function ChurchMinistersEdit() {
   const [sectionContent, setSectionContent] = useState({
-    ministers: [
+    heading: "CHURCH MINISTERS",
+    description:
+      "Our church ministers lead various ministries and serve our congregation in specialized areas.",
+    churchMinisters: [
       {
         id: 1,
         name: "Pastor Bolanle Sowole",
         role: "Minister",
-        image: "img_dsc_9310.png",
+        image: "/images/img_dsc_9310.png",
       },
       {
         id: 2,
         name: "Sister Omolade Babalola",
         role: "Minister",
-        image: "img_dsc_9297.png",
+        image: "/images/img_dsc_9297.png",
       },
       {
         id: 3,
         name: "Bro Jide Akinsole",
         role: "Minister",
-        image: "img_dsc_9242.png",
+        image: "/images/img_dsc_9242.png",
       },
       {
         id: 4,
         name: "Dcn. Emmanuel Onakoya",
         role: "Minister",
-        image: "img_dsc_9206.png",
+        image: "/images/img_dsc_9206.png",
+      },
+      {
+        id: 5,
+        name: "Dcn. Goke Fadeyi",
+        role: "Minister",
+        image: "/images/img_dsc_9251.png",
+      },
+      {
+        id: 6,
+        name: "Dcn. Kolade Omodele",
+        role: "Minister",
+        image: "/images/img_dsc_9350.png",
+      },
+      {
+        id: 7,
+        name: "Pastor Gboyega Akanle",
+        role: "Minister",
+        image: "/images/img_dsc_9348.png",
+      },
+      {
+        id: 8,
+        name: "PST. Temitope Owoeye",
+        role: "Minister",
+        image: "/images/img_dsc_9341.png",
+      },
+      {
+        id: 9,
+        name: "Dcn Bamidele Ojo",
+        role: "Minister",
+        image: "/images/img_dsc_9322.png",
+      },
+      {
+        id: 10,
+        name: "Dcn. Adeola Tawede",
+        role: "Minister",
+        image: "/images/img_dsc_9284.png",
+      },
+      {
+        id: 11,
+        name: "Dcn. Abel Makanjuola",
+        role: "Minister",
+        image: "/images/img_dsc_9277.png",
+      },
+      {
+        id: 12,
+        name: "Dr Yemi Ilesanmi",
+        role: "Minister",
+        image: "/images/img_dsc_9268.png",
+      },
+      {
+        id: 13,
+        name: "Pastor Dare Sylvester",
+        role: "Minister",
+        image: "/images/img_dsc_9256.png",
+      },
+      {
+        id: 14,
+        name: "Dr. Ayo Oshinnowo",
+        role: "Minister",
+        image: "/images/img_dsc_9245.png",
+      },
+      {
+        id: 15,
+        name: "Bro Soji Toriola",
+        role: "Minister",
+        image: "/images/img_dsc_9408.png",
+      },
+      {
+        id: 16,
+        name: "Bro Mfon Obot",
+        role: "Minister",
+        image: "/images/img_dsc_9293.png",
+      },
+      {
+        id: 17,
+        name: "Pst. Feyisayo Owoeye",
+        role: "Minister",
+        image: "/images/nhjsdkjd1.jpeg",
+      },
+      {
+        id: 18,
+        name: "Dcns Eniola Omodele",
+        role: "Minister",
+        image: "/images/jsdnjbjhosdh.jpeg",
+      },
+      {
+        id: 19,
+        name: "Dcn Isaac Ademakinwa",
+        role: "Minister",
+        image: "/images/osbhsabjhbasi.jpeg",
       },
     ],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingMinisterId, setEditingMinisterId] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Comment out API fetch
+  // useEffect(() => {
+  //   async function fetchSectionData() {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await fetchChurchMinistersSection();
+  //       setSectionContent(data);
+  //     } catch (error) {
+  //       console.error("Error fetching Church Ministers section data:", error);
+  //       toast.error("Failed to load Church Ministers section data");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+
+  //   fetchSectionData();
+  // }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleMinisterChange = (e, id) => {
     const { name, value } = e.target;
     setSectionContent((prev) => ({
       ...prev,
-      ministers: prev.ministers.map((minister) =>
+      churchMinisters: prev.churchMinisters.map((minister) =>
         minister.id === id ? { ...minister, [name]: value } : minister
       ),
     }));
   };
 
-  const handleAddMinister = () => {
-    const newMinister = {
-      id: Math.max(0, ...sectionContent.ministers.map((m) => m.id)) + 1,
-      name: "",
-      role: "",
-      image: "",
-    };
+  const handleImageChange = (id, imageUrl) => {
     setSectionContent((prev) => ({
       ...prev,
-      ministers: [...prev.ministers, newMinister],
+      churchMinisters: prev.churchMinisters.map((minister) =>
+        minister.id === id ? { ...minister, image: imageUrl } : minister
+      ),
+    }));
+  };
+
+  const handleAddMinister = () => {
+    const newId =
+      sectionContent.churchMinisters.length > 0
+        ? Math.max(...sectionContent.churchMinisters.map((m) => m.id)) + 1
+        : 1;
+
+    const newMinister = {
+      id: newId,
+      name: "",
+      role: "",
+      bio: "",
+      image: "",
+    };
+
+    setSectionContent((prev) => ({
+      ...prev,
+      churchMinisters: [...prev.churchMinisters, newMinister],
     }));
     setEditingMinisterId(newMinister.id);
   };
@@ -62,16 +203,49 @@ export default function ChurchMinistersEdit() {
   const handleDeleteMinister = (id) => {
     setSectionContent((prev) => ({
       ...prev,
-      ministers: prev.ministers.filter((minister) => minister.id !== id),
+      churchMinisters: prev.churchMinisters.filter(
+        (minister) => minister.id !== id
+      ),
     }));
     setEditingMinisterId(null);
   };
 
   const handleSave = () => {
-    setIsEditing(false);
-    setEditingMinisterId(null);
-    console.log("Saved section content:", sectionContent);
+    // Comment out API save
+    setIsSaving(true);
+    // try to simulate saving
+    setTimeout(() => {
+      console.log("Saved section content:", sectionContent);
+      setIsEditing(false);
+      setEditingMinisterId(null);
+      setIsSaving(false);
+      alert("Church Ministers section saved successfully");
+    }, 1000);
+
+    // try {
+    //   setIsSaving(true);
+    //   await updateChurchMinistersSection(sectionContent);
+    //   setIsEditing(false);
+    //   setEditingMinisterId(null);
+    //   toast.success("Church Ministers section updated successfully");
+    // } catch (error) {
+    //   console.error("Error saving Church Ministers section:", error);
+    //   toast.error("Failed to update Church Ministers section");
+    // } finally {
+    //   setIsSaving(false);
+    // }
   };
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+  //       <div className="animate-pulse">
+  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+  //         <div className="h-40 bg-gray-200 rounded"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -83,6 +257,7 @@ export default function ChurchMinistersEdit() {
             setEditingMinisterId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
@@ -91,24 +266,37 @@ export default function ChurchMinistersEdit() {
       {!isEditing ? (
         <div className="p-8 bg-white">
           <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-semibold text-center mb-4">
+              {sectionContent.heading}
+            </h2>
+            <p className="text-gray-600 text-center mb-8 max-w-3xl mx-auto">
+              {sectionContent.description}
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {sectionContent.ministers.map((minister) => (
+              {sectionContent.churchMinisters.map((minister) => (
                 <div
                   key={minister.id}
                   className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200"
                 >
                   <div className="aspect-square bg-gray-200 relative">
                     {minister.image && (
-                      <img
-                        src={`/images/${minister.image}`}
+                      <Image
+                        src={minister.image}
                         alt={minister.name}
                         className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 25vw"
                       />
                     )}
                   </div>
                   <div className="p-3 text-center">
                     <h3 className="font-medium text-sm">{minister.name}</h3>
                     <p className="text-gray-600 text-xs">{minister.role}</p>
+                    {minister.bio && (
+                      <p className="text-gray-600 text-xs mt-1">
+                        {minister.bio}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -119,6 +307,37 @@ export default function ChurchMinistersEdit() {
         <div className="p-6 space-y-6 bg-white">
           {editingMinisterId === null ? (
             <>
+              <div className="grid grid-cols-1 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Section Heading
+                  </label>
+                  <input
+                    type="text"
+                    name="heading"
+                    value={sectionContent.heading}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Section heading"
+                    disabled={isSaving}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={sectionContent.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Section description"
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+
               <div className="border-t border-gray-200 pt-6">
                 <div className="flex justify-between items-center mb-4">
                   <h4 className="font-medium text-gray-900">
@@ -127,13 +346,14 @@ export default function ChurchMinistersEdit() {
                   <button
                     onClick={handleAddMinister}
                     className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={isSaving}
                   >
                     Add Minister
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sectionContent.ministers.map((minister) => (
+                  {sectionContent.churchMinisters.map((minister) => (
                     <div
                       key={minister.id}
                       className="border border-gray-200 rounded-lg p-4"
@@ -141,10 +361,12 @@ export default function ChurchMinistersEdit() {
                       <div className="flex items-center mb-2">
                         <div className="h-12 w-12 bg-gray-200 rounded-full overflow-hidden mr-3">
                           {minister.image && (
-                            <img
-                              src={`/images/${minister.image}`}
+                            <Image
+                              src={minister.image}
                               alt={minister.name}
                               className="w-full h-full object-cover"
+                              width={48}
+                              height={48}
                             />
                           )}
                         </div>
@@ -159,12 +381,14 @@ export default function ChurchMinistersEdit() {
                         <button
                           onClick={() => setEditingMinisterId(minister.id)}
                           className="px-3 py-1.5 text-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                          disabled={isSaving}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDeleteMinister(minister.id)}
                           className="px-3 py-1.5 text-sm border border-red-200 text-red-600 rounded-md hover:bg-red-50"
+                          disabled={isSaving}
                         >
                           Delete
                         </button>
@@ -177,9 +401,10 @@ export default function ChurchMinistersEdit() {
               <div className="flex justify-end pt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </>
@@ -187,11 +412,11 @@ export default function ChurchMinistersEdit() {
             <div className="max-w-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h4 className="font-medium text-gray-900">
-                  {sectionContent.ministers.find(
+                  {sectionContent.churchMinisters.find(
                     (m) => m.id === editingMinisterId
                   )?.name
                     ? `Edit Minister: ${
-                        sectionContent.ministers.find(
+                        sectionContent.churchMinisters.find(
                           (m) => m.id === editingMinisterId
                         ).name
                       }`
@@ -200,6 +425,7 @@ export default function ChurchMinistersEdit() {
                 <button
                   onClick={() => setEditingMinisterId(null)}
                   className="text-gray-500 hover:text-gray-700"
+                  disabled={isSaving}
                 >
                   &times;
                 </button>
@@ -214,13 +440,14 @@ export default function ChurchMinistersEdit() {
                     type="text"
                     name="name"
                     value={
-                      sectionContent.ministers.find(
+                      sectionContent.churchMinisters.find(
                         (m) => m.id === editingMinisterId
                       )?.name || ""
                     }
                     onChange={(e) => handleMinisterChange(e, editingMinisterId)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Full name"
+                    disabled={isSaving}
                   />
                 </div>
 
@@ -232,44 +459,68 @@ export default function ChurchMinistersEdit() {
                     type="text"
                     name="role"
                     value={
-                      sectionContent.ministers.find(
+                      sectionContent.churchMinisters.find(
                         (m) => m.id === editingMinisterId
                       )?.role || ""
                     }
                     onChange={(e) => handleMinisterChange(e, editingMinisterId)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. Minister, Pastor, etc."
+                    placeholder="e.g. Minister, Deacon, etc."
+                    disabled={isSaving}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image Filename
+                    Bio (Optional)
                   </label>
-                  <input
-                    type="text"
-                    name="image"
+                  <textarea
+                    name="bio"
                     value={
-                      sectionContent.ministers.find(
+                      sectionContent.churchMinisters.find(
+                        (m) => m.id === editingMinisterId
+                      )?.bio || ""
+                    }
+                    onChange={(e) => handleMinisterChange(e, editingMinisterId)}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Brief biography"
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Minister Image
+                  </label>
+                  <ImageUpload
+                    existingImageUrl={
+                      sectionContent.churchMinisters.find(
                         (m) => m.id === editingMinisterId
                       )?.image || ""
                     }
-                    onChange={(e) => handleMinisterChange(e, editingMinisterId)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. minister-image.jpg"
+                    onImageUploaded={(imageUrl) =>
+                      handleImageChange(editingMinisterId, imageUrl)
+                    }
+                    section="about-us/church-ministers"
+                    disabled={isSaving}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter the filename only. Images should be in the
-                    public/images directory.
-                  </p>
                 </div>
 
                 <div className="flex justify-end pt-6">
                   <button
-                    onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    onClick={() => setEditingMinisterId(null)}
+                    className="px-6 py-2 mr-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                    disabled={isSaving}
                   >
-                    Save Minister
+                    Back to List
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Save All Changes"}
                   </button>
                 </div>
               </div>

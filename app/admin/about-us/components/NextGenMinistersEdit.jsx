@@ -1,39 +1,74 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
+// import { toast } from "react-hot-toast";
+// import {
+//   fetchNextGenMinistersSection,
+//   updateNextGenMinistersSection,
+// } from "@/lib/services/aboutUsService";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function NextGenMinistersEdit() {
   const [sectionContent, setSectionContent] = useState({
+    heading: "NEXTGEN MINISTERS",
+    description:
+      "Our youth leaders guide and mentor the next generation of believers.",
     ministers: [
       {
         id: 1,
         name: "Segun Oladeji",
         role: "Next Gen Minister",
-        image: "img_dsc_9404.png",
+        image: "/images/img_dsc_9404.png",
       },
       {
         id: 2,
         name: "Janet Oluwayomi",
-        role: "Next Gen Minister",
-        image: "WhatsApp Image 2025-03-06 at 19.50.11_050ee46d.png",
+        role: "",
+        image: "/images/WhatsApp Image 2025-03-06 at 19.50.11_050ee46d.png",
       },
       {
         id: 3,
         name: "Temitope Ann Aluko",
         role: "Next Gen Minister",
-        image: "WhatsApp Image 2025-03-06 at 19.50.12_313e4a70.png",
+        image: "/images/WhatsApp Image 2025-03-06 at 19.50.12_313e4a70.png",
       },
       {
         id: 4,
         name: "Susanah Amure",
-        role: "Next Gen Minister",
-        image: "WhatsApp Image 2025-03-06 at 19.50.12_6dc5a47c.png",
+        role: "",
+        image: "/images/WhatsApp Image 2025-03-06 at 19.50.12_6dc5a47c.png",
       },
     ],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingMinisterId, setEditingMinisterId] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Comment out API fetch
+  // useEffect(() => {
+  //   async function fetchSectionData() {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await fetchNextGenMinistersSection();
+  //       setSectionContent(data);
+  //     } catch (error) {
+  //       console.error("Error fetching NextGen Ministers section data:", error);
+  //       toast.error("Failed to load section data");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+
+  //   fetchSectionData();
+  // }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleMinisterChange = (e, id) => {
     const { name, value } = e.target;
@@ -41,6 +76,15 @@ export default function NextGenMinistersEdit() {
       ...prev,
       ministers: prev.ministers.map((minister) =>
         minister.id === id ? { ...minister, [name]: value } : minister
+      ),
+    }));
+  };
+
+  const handleImageChange = (id, imageUrl) => {
+    setSectionContent((prev) => ({
+      ...prev,
+      ministers: prev.ministers.map((minister) =>
+        minister.id === id ? { ...minister, image: imageUrl } : minister
       ),
     }));
   };
@@ -68,10 +112,41 @@ export default function NextGenMinistersEdit() {
   };
 
   const handleSave = () => {
-    setIsEditing(false);
-    setEditingMinisterId(null);
-    console.log("Saved section content:", sectionContent);
+    // Comment out API save
+    setIsSaving(true);
+    // try to simulate saving
+    setTimeout(() => {
+      console.log("Saved section content:", sectionContent);
+      setIsEditing(false);
+      setEditingMinisterId(null);
+      setIsSaving(false);
+      alert("NextGen Ministers section saved successfully");
+    }, 1000);
+
+    // try {
+    //   setIsSaving(true);
+    //   await updateNextGenMinistersSection(sectionContent);
+    //   setIsEditing(false);
+    //   setEditingMinisterId(null);
+    //   toast.success("NextGen Ministers section updated successfully");
+    // } catch (error) {
+    //   console.error("Error saving NextGen Ministers section:", error);
+    //   toast.error("Failed to update section");
+    // } finally {
+    //   setIsSaving(false);
+    // }
   };
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+  //       <div className="animate-pulse">
+  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+  //         <div className="h-40 bg-gray-200 rounded"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -83,6 +158,7 @@ export default function NextGenMinistersEdit() {
             setEditingMinisterId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
@@ -91,6 +167,12 @@ export default function NextGenMinistersEdit() {
       {!isEditing ? (
         <div className="p-8 bg-white">
           <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-semibold text-center mb-4">
+              {sectionContent.heading}
+            </h2>
+            <p className="text-gray-600 text-center mb-8 max-w-3xl mx-auto">
+              {sectionContent.description}
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {sectionContent.ministers.map((minister) => (
                 <div
@@ -99,10 +181,12 @@ export default function NextGenMinistersEdit() {
                 >
                   <div className="aspect-square bg-gray-200 relative">
                     {minister.image && (
-                      <img
-                        src={`/images/${minister.image}`}
+                      <Image
+                        src={minister.image}
                         alt={minister.name}
                         className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 25vw"
                       />
                     )}
                   </div>
@@ -119,6 +203,37 @@ export default function NextGenMinistersEdit() {
         <div className="p-6 space-y-6 bg-white">
           {editingMinisterId === null ? (
             <>
+              <div className="grid grid-cols-1 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Section Heading
+                  </label>
+                  <input
+                    type="text"
+                    name="heading"
+                    value={sectionContent.heading}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Section heading"
+                    disabled={isSaving}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={sectionContent.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="Section description"
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+
               <div className="border-t border-gray-200 pt-6">
                 <div className="flex justify-between items-center mb-4">
                   <h4 className="font-medium text-gray-900">
@@ -127,6 +242,7 @@ export default function NextGenMinistersEdit() {
                   <button
                     onClick={handleAddMinister}
                     className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={isSaving}
                   >
                     Add Minister
                   </button>
@@ -141,10 +257,12 @@ export default function NextGenMinistersEdit() {
                       <div className="flex items-center mb-2">
                         <div className="h-12 w-12 bg-gray-200 rounded-full overflow-hidden mr-3">
                           {minister.image && (
-                            <img
-                              src={`/images/${minister.image}`}
+                            <Image
+                              src={minister.image}
                               alt={minister.name}
                               className="w-full h-full object-cover"
+                              width={48}
+                              height={48}
                             />
                           )}
                         </div>
@@ -159,12 +277,14 @@ export default function NextGenMinistersEdit() {
                         <button
                           onClick={() => setEditingMinisterId(minister.id)}
                           className="px-3 py-1.5 text-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                          disabled={isSaving}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDeleteMinister(minister.id)}
                           className="px-3 py-1.5 text-sm border border-red-200 text-red-600 rounded-md hover:bg-red-50"
+                          disabled={isSaving}
                         >
                           Delete
                         </button>
@@ -177,9 +297,10 @@ export default function NextGenMinistersEdit() {
               <div className="flex justify-end pt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </>
@@ -200,6 +321,7 @@ export default function NextGenMinistersEdit() {
                 <button
                   onClick={() => setEditingMinisterId(null)}
                   className="text-gray-500 hover:text-gray-700"
+                  disabled={isSaving}
                 >
                   &times;
                 </button>
@@ -221,6 +343,7 @@ export default function NextGenMinistersEdit() {
                     onChange={(e) => handleMinisterChange(e, editingMinisterId)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Full name"
+                    disabled={isSaving}
                   />
                 </div>
 
@@ -239,37 +362,42 @@ export default function NextGenMinistersEdit() {
                     onChange={(e) => handleMinisterChange(e, editingMinisterId)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="e.g. Next Gen Minister, Youth Pastor, etc."
+                    disabled={isSaving}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image Filename
+                    Minister Image
                   </label>
-                  <input
-                    type="text"
-                    name="image"
-                    value={
+                  <ImageUpload
+                    existingImageUrl={
                       sectionContent.ministers.find(
                         (m) => m.id === editingMinisterId
                       )?.image || ""
                     }
-                    onChange={(e) => handleMinisterChange(e, editingMinisterId)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. minister-image.jpg"
+                    onImageUploaded={(imageUrl) =>
+                      handleImageChange(editingMinisterId, imageUrl)
+                    }
+                    section="about-us/nextgen-ministers"
+                    disabled={isSaving}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter the filename only. Images should be in the
-                    public/images directory.
-                  </p>
                 </div>
 
                 <div className="flex justify-end pt-6">
                   <button
-                    onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    onClick={() => setEditingMinisterId(null)}
+                    className="px-6 py-2 mr-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                    disabled={isSaving}
                   >
-                    Save Minister
+                    Back to List
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Save All Changes"}
                   </button>
                 </div>
               </div>

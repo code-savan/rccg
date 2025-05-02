@@ -1,13 +1,15 @@
+"use client";
+
 import React, { useState, useRef } from "react";
-import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
-import supabase from "../../lib/supabase";
 
 export default function ImageUpload({
   onImageUploaded,
   section = "general",
   existingImageUrl = "",
   className = "",
+  disabled = false,
 }) {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(existingImageUrl);
@@ -47,15 +49,25 @@ export default function ImageUpload({
       setUploading(true);
 
       // Create a unique filename based on timestamp and original name
+
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random()
         .toString(36)
         .substring(2, 15)}.${fileExt}`;
       const filePath = `${section}/${fileName}`;
 
+      // Determine which storage bucket to use based on section prefix
+      let bucketName = "get-involved-files";
+
+      if (section.startsWith("services-events")) {
+        bucketName = "services-events-files";
+      } else if (section.startsWith("about-us")) {
+        bucketName = "about-us-files";
+      }
+
       // Upload to Supabase storage
       const { data, error } = await supabase.storage
-        .from("get_involved_files")
+        .from(bucketName)
         .upload(filePath, file, {
           cacheControl: "3600",
           upsert: false,
@@ -67,7 +79,7 @@ export default function ImageUpload({
 
       // Get public URL for the uploaded file
       const { data: urlData } = supabase.storage
-        .from("get_involved_files")
+        .from(bucketName)
         .getPublicUrl(filePath);
 
       // Call the callback with the new image URL
@@ -94,32 +106,30 @@ export default function ImageUpload({
     }
   };
 
-  // Placeholder image URL - use existing defaultNoData.png
-  const placeholderImageUrl = "/images/defaultNoData.png";
-
-  // The display URL is either the previewUrl, the existingImageUrl, or the placeholder
-  const displayUrl = previewUrl || placeholderImageUrl;
-
   return (
-    <div className={`${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Left side - Upload area */}
-        <div className="space-y-4">
-          <div
-            className="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={triggerFileInput}
-          >
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={fileInputRef}
-              className="hidden"
-            />
-
+    <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${className}`}>
+      {/* Left column: Upload controls */}
+      <div className="space-y-4">
+        <div
+          className={`border-2 border-dashed border-gray-300 rounded-lg p-4 text-center ${
+            disabled
+              ? "opacity-50 cursor-not-allowed"
+              : "cursor-pointer hover:bg-gray-50"
+          } transition-colors`}
+          onClick={disabled ? undefined : triggerFileInput}
+        >
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+            disabled={disabled}
+          />
+          <div className="flex flex-col items-center justify-center py-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12 text-gray-400"
+              className="h-10 w-10 text-gray-400 mb-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -128,107 +138,56 @@ export default function ImageUpload({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-
-            <p className="mt-3 text-sm font-medium text-gray-700">
-              Click to select an image
+            <p className="text-sm font-medium text-gray-600">
+              Click to upload an image or drag and drop
             </p>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="text-xs text-gray-500 mt-1">
               PNG, JPG, GIF up to 5MB
             </p>
           </div>
+        </div>
 
+        <div>
           <button
             onClick={uploadImage}
-            disabled={uploading || !file}
-            className={`w-full px-4 py-3 text-white bg-blue-600 rounded-md ${
-              uploading || !file
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-700"
-            } transition-colors`}
+            disabled={!file || uploading || disabled}
+            className="px-4 py-2 bg-blue-600 text-white rounded w-full disabled:bg-gray-400"
           >
-            {uploading ? (
-              <div className="flex items-center justify-center">
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                <span>Uploading...</span>
-              </div>
-            ) : (
-              "Upload Image"
-            )}
+            {uploading ? "Uploading..." : "Upload Image"}
           </button>
         </div>
 
-        {/* Right side - Preview */}
         <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">
-            Image Preview:
-          </p>
-          <div className="relative h-48 w-full border border-gray-200 rounded-md bg-gray-50 overflow-hidden">
-            <Image
-              src={displayUrl}
-              alt="Image preview"
-              fill
-              className="object-contain"
-            />
-          </div>
-
-          {file && (
-            <p className="mt-2 text-xs text-gray-500 truncate">
-              Selected: {file.name}
-            </p>
-          )}
-
-          {!file && previewUrl && (
-            <p className="mt-2 text-xs text-gray-500 truncate">
-              Current image: {previewUrl.split("/").pop()}
-            </p>
-          )}
-
-          {!file && !previewUrl && (
-            <p className="mt-2 text-xs text-gray-500">
-              No image selected - default placeholder shown
-            </p>
-          )}
-
-          {/* Allow manual URL entry/editing */}
-          <div className="mt-3">
-            <label
-              htmlFor="image-url"
-              className="text-xs font-medium text-gray-700"
-            >
-              Image URL (edit manually if needed):
-            </label>
-            <input
-              id="image-url"
-              type="text"
-              value={previewUrl || ""}
-              onChange={handleUrlChange}
-              className="mt-1 w-full px-3 py-2 text-sm border border-gray-300 rounded-md"
-              placeholder="/images/your-image.jpg"
-            />
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Or enter image URL manually
+          </label>
+          <input
+            type="text"
+            value={previewUrl}
+            onChange={handleUrlChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            placeholder="https://example.com/image.jpg"
+            disabled={disabled}
+          />
         </div>
+      </div>
+
+      {/* Right column: Preview */}
+      <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+        {previewUrl ? (
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="w-full h-full object-contain max-h-48"
+          />
+        ) : (
+          <div className="text-center p-4">
+            <p className="text-gray-400">No image preview available</p>
+          </div>
+        )}
       </div>
     </div>
   );

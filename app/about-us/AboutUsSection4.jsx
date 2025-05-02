@@ -4,31 +4,35 @@ import UserProfile from "../../components/UserProfile";
 import React, { Suspense } from "react";
 
 const serviceDepartmentGrid = [
-    {
-        userImage: "img_pexels_cottonbro_7520369.png",
-        userTitle: "Choir",
-        userDescription: (
-          <>
-            Our Choir leads the congregation in heartfelt worship, creating an atmosphere where God’s presence is felt through spirit-filled songs and praise.
-          </>
-        ),
-      },
-      {
-        userImage: "img_dsc_9200.png",
-        userTitle: "Sunday School",
-        userDescription: (
-          <>
-           Sunday School is a time of deep biblical teaching, helping believers grow in faith, understanding, and practical Christian living.
-
-          </>
-        ),
-      },
+  {
+    userImage: "img_pexels_cottonbro_7520369.png",
+    userTitle: "Choir",
+    userDescription: (
+      <>
+        Our Choir leads the congregation in heartfelt worship, creating an
+        atmosphere where God’s presence is felt through spirit-filled songs and
+        praise.
+      </>
+    ),
+  },
+  {
+    userImage: "img_dsc_9200.png",
+    userTitle: "Sunday School",
+    userDescription: (
+      <>
+        Sunday School is a time of deep biblical teaching, helping believers
+        grow in faith, understanding, and practical Christian living.
+      </>
+    ),
+  },
   {
     userImage: "img_dsc_9539.png",
     userTitle: "Welfare",
     userDescription: (
       <>
-        The Welfare Department extends God’s love through acts of kindness, providing support and care to those in need within the church and community.
+        The Welfare Department extends God’s love through acts of kindness,
+        providing support and care to those in need within the church and
+        community.
       </>
     ),
   },
@@ -37,8 +41,8 @@ const serviceDepartmentGrid = [
     userTitle: "Ushering",
     userDescription: (
       <>
-        Our Ushers ensure a warm and welcoming worship experience by assisting with seating, orderliness, and ensuring a smooth flow during services.
-
+        Our Ushers ensure a warm and welcoming worship experience by assisting
+        with seating, orderliness, and ensuring a smooth flow during services.
       </>
     ),
   },
@@ -47,8 +51,9 @@ const serviceDepartmentGrid = [
     userTitle: "Sound & Media",
     userDescription: (
       <>
-        The Sound & Media team enhances worship by managing audio, visuals, and live streaming, ensuring every message is delivered with clarity and excellence.
-
+        The Sound & Media team enhances worship by managing audio, visuals, and
+        live streaming, ensuring every message is delivered with clarity and
+        excellence.
       </>
     ),
   },
@@ -57,8 +62,8 @@ const serviceDepartmentGrid = [
     userTitle: "Special Duties",
     userDescription: (
       <>
-        The Special Duties team provides essential support for church programs, coordinating logistics and ensuring smooth event execution.
-
+        The Special Duties team provides essential support for church programs,
+        coordinating logistics and ensuring smooth event execution.
       </>
     ),
   },
@@ -67,8 +72,8 @@ const serviceDepartmentGrid = [
     userTitle: "Children and Media",
     userDescription: (
       <>
-        Our Children’s Ministry nurtures young hearts in the faith, while the Media team creatively shares God’s message through digital platforms.
-
+        Our Children’s Ministry nurtures young hearts in the faith, while the
+        Media team creatively shares God’s message through digital platforms.
       </>
     ),
   },
@@ -77,8 +82,8 @@ const serviceDepartmentGrid = [
     userTitle: "Accounting",
     userDescription: (
       <>
-       The Accounting team ensures transparency and stewardship in managing church finances, handling tithes, offerings, and budgets with integrity.
-
+        The Accounting team ensures transparency and stewardship in managing
+        church finances, handling tithes, offerings, and budgets with integrity.
       </>
     ),
   },
@@ -87,8 +92,8 @@ const serviceDepartmentGrid = [
     userTitle: "Transportation",
     userDescription: (
       <>
-        The Transportation team ensures that members and visitors can attend services and events with ease, providing reliable transport solutions.
-
+        The Transportation team ensures that members and visitors can attend
+        services and events with ease, providing reliable transport solutions.
       </>
     ),
   },
@@ -97,8 +102,8 @@ const serviceDepartmentGrid = [
     userTitle: "Sanctuary Keeper & Beautifiers",
     userDescription: (
       <>
-        This team maintains the cleanliness and beauty of God’s house, creating a welcoming and reverent environment for worship.
-
+        This team maintains the cleanliness and beauty of God’s house, creating
+        a welcoming and reverent environment for worship.
       </>
     ),
   },
@@ -122,8 +127,9 @@ export default function AboutUsSection4() {
               className="self-stretch text-center !font-poppins text-[16px] font-light leading-[130%] !text-charcoal md:text-[15px] sm:text-[14px]"
             >
               <>
-              At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There’s a place for everyone to serve, grow, and make an impact!
-
+                At RCCG Rod of God Parish, our various departments serve to
+                strengthen the church and community. There’s a place for
+                everyone to serve, grow, and make an impact!
               </>
             </Text>
           </div>
@@ -135,7 +141,6 @@ export default function AboutUsSection4() {
             ))}
           </Suspense>
         </div>
-
       </div>
     </>
   );

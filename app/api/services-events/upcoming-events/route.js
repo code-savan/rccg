@@ -20,7 +20,8 @@ export async function GET() {
       // If no data found, return default values
       if (error.code === "PGRST116") {
         const defaultData = {
-          upcoming_events_heading: defaultServicesEventsData.upcoming_events_heading,
+          upcoming_events_heading:
+            defaultServicesEventsData.upcoming_events_heading,
           upcoming_events: defaultServicesEventsData.upcoming_events,
         };
         return NextResponse.json(mapDBToUpcomingEventsSection(defaultData));
@@ -32,8 +33,17 @@ export async function GET() {
       );
     }
 
+    // Ensure data is properly formatted
+    const sanitizedData = {
+      upcoming_events_heading:
+        data?.upcoming_events_heading ||
+        defaultServicesEventsData.upcoming_events_heading,
+      upcoming_events:
+        data?.upcoming_events || defaultServicesEventsData.upcoming_events,
+    };
+
     // Map database fields to component state
-    const mappedData = mapDBToUpcomingEventsSection(data);
+    const mappedData = mapDBToUpcomingEventsSection(sanitizedData);
     return NextResponse.json(mappedData);
   } catch (error) {
     console.error("Server error fetching upcoming events section data:", error);
@@ -85,17 +95,24 @@ export async function PUT(request) {
           // Add default values for other sections
           welcome_heading: defaultServicesEventsData.welcome_heading,
           welcome_subheading: defaultServicesEventsData.welcome_subheading,
-          welcome_background_image: defaultServicesEventsData.welcome_background_image,
+          welcome_background_image:
+            defaultServicesEventsData.welcome_background_image,
           church_info_heading: defaultServicesEventsData.church_info_heading,
           church_info_date: defaultServicesEventsData.church_info_date,
-          church_info_bible_verse: defaultServicesEventsData.church_info_bible_verse,
-          church_info_bible_reference: defaultServicesEventsData.church_info_bible_reference,
+          church_info_bible_verse:
+            defaultServicesEventsData.church_info_bible_verse,
+          church_info_bible_reference:
+            defaultServicesEventsData.church_info_bible_reference,
           church_info_contacts: defaultServicesEventsData.church_info_contacts,
-          church_info_background_image: defaultServicesEventsData.church_info_background_image,
-          weekly_programs_heading: defaultServicesEventsData.weekly_programs_heading,
-          weekly_programs_description: defaultServicesEventsData.weekly_programs_description,
+          church_info_background_image:
+            defaultServicesEventsData.church_info_background_image,
+          weekly_programs_heading:
+            defaultServicesEventsData.weekly_programs_heading,
+          weekly_programs_description:
+            defaultServicesEventsData.weekly_programs_description,
           weekly_programs: defaultServicesEventsData.weekly_programs,
-          monthly_programs_heading: defaultServicesEventsData.monthly_programs_heading,
+          monthly_programs_heading:
+            defaultServicesEventsData.monthly_programs_heading,
           monthly_programs: defaultServicesEventsData.monthly_programs,
         })
         .select("upcoming_events_heading, upcoming_events");

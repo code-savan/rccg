@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  fetchMonthlyProgramsSection,
+  updateMonthlyProgramsSection,
+} from "@/lib/services/servicesEventsService";
+import { formatDisplayText } from "@/lib/servicesEventsFormData";
 
 export default function MonthlyProgramsEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -38,6 +43,27 @@ export default function MonthlyProgramsEdit() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingProgramId, setEditingProgramId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchMonthlyProgramsSection();
+        setSectionContent(data);
+      } catch (err) {
+        console.error("Error fetching monthly programs section data:", err);
+        setError("Failed to load content. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,12 +106,40 @@ export default function MonthlyProgramsEdit() {
     setEditingProgramId(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+
+      const updatedData = await updateMonthlyProgramsSection(sectionContent);
+      setSectionContent(updatedData);
     setIsEditing(false);
     setEditingProgramId(null);
-    console.log("Saved monthly programs content:", sectionContent);
-    // API call would go here
+    } catch (err) {
+      console.error("Error saving monthly programs section data:", err);
+      setError("Failed to save changes. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="font-medium text-gray-800">
+            Monthly Programs Section
+          </h3>
+        </div>
+        <div className="p-8 bg-white flex justify-center items-center">
+          <div className="animate-pulse text-center">
+            <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-40 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -97,10 +151,17 @@ export default function MonthlyProgramsEdit() {
             setEditingProgramId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
 
       {!isEditing ? (
         <div className="p-8 bg-white">
@@ -117,10 +178,10 @@ export default function MonthlyProgramsEdit() {
                 >
                   <div>
                     <h4 className="text-xl font-medium mb-2 whitespace-pre-line">
-                      {program.title}
+                      {formatDisplayText(program.title)}
                     </h4>
                     <p className="text-gray-600 whitespace-pre-line mb-6">
-                      {program.description}
+                      {formatDisplayText(program.description)}
                     </p>
                   </div>
                   <div className="space-y-3">
@@ -214,7 +275,7 @@ export default function MonthlyProgramsEdit() {
                     >
                       <div className="flex justify-between mb-3">
                         <h5 className="font-medium">
-                          {program.title.replace("\n", " ") || "New Program"}
+                          {program.title.replace(/\n/g, " ") || "New Program"}
                         </h5>
                         <div className="flex space-x-2">
                           <button
@@ -253,54 +314,46 @@ export default function MonthlyProgramsEdit() {
                       </div>
                     </div>
                   ))}
-                </div>
               </div>
 
-              <div className="flex justify-end pt-6">
+                <div className="flex justify-end pt-4 mt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
                 >
-                  Save Changes
+                    {isSaving ? "Saving..." : "Save Changes"}
                 </button>
+                </div>
               </div>
             </>
           ) : (
-            <div className="max-w-2xl">
+            <div>
               <div className="flex justify-between items-center mb-6">
-                <h4 className="font-medium text-gray-900">
-                  {sectionContent.monthlyPrograms.find(
-                    (p) => p.id === editingProgramId
-                  )?.title
-                    ? `Edit Program: ${sectionContent.monthlyPrograms
-                        .find((p) => p.id === editingProgramId)
-                        .title.replace("\n", " ")}`
-                    : "Add New Program"}
-                </h4>
+                <h4 className="font-medium text-gray-900">Edit Program</h4>
                 <button
                   onClick={() => setEditingProgramId(null)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
                 >
-                  &times;
+                  Back to List
                 </button>
               </div>
 
-              <div className="space-y-4">
+              {sectionContent.monthlyPrograms
+                .filter((program) => program.id === editingProgramId)
+                .map((program) => (
+                  <div key={program.id} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Program Title (use \n for line breaks)
+                        Title (use \n for line breaks)
                   </label>
-                  <textarea
+                      <input
+                        type="text"
                     name="title"
-                    value={
-                      sectionContent.monthlyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.title || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
-                    rows={2}
+                        value={program.title}
+                        onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. Thanksgiving & Anointing\nService"
+                        placeholder="Program title"
                   />
                 </div>
 
@@ -310,18 +363,15 @@ export default function MonthlyProgramsEdit() {
                   </label>
                   <textarea
                     name="description"
-                    value={
-                      sectionContent.monthlyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.description || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                        value={program.description}
+                        onChange={(e) => handleProgramChange(e, program.id)}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Program description"
                   />
                 </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Location
@@ -329,14 +379,10 @@ export default function MonthlyProgramsEdit() {
                   <input
                     type="text"
                     name="location"
-                    value={
-                      sectionContent.monthlyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.location || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                          value={program.location}
+                          onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. Parish House Indy"
+                          placeholder="Program location"
                   />
                 </div>
 
@@ -347,12 +393,8 @@ export default function MonthlyProgramsEdit() {
                   <input
                     type="text"
                     name="day"
-                    value={
-                      sectionContent.monthlyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.day || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                          value={program.day}
+                          onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="e.g. 1st Sunday of the Month"
                   />
@@ -365,26 +407,25 @@ export default function MonthlyProgramsEdit() {
                   <input
                     type="text"
                     name="time"
-                    value={
-                      sectionContent.monthlyPrograms.find(
-                        (p) => p.id === editingProgramId
-                      )?.time || ""
-                    }
-                    onChange={(e) => handleProgramChange(e, editingProgramId)}
+                          value={program.time}
+                          onChange={(e) => handleProgramChange(e, program.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. 10:30am – 1:00pm"
+                          placeholder="e.g. 9:30am – 10:30am"
                   />
+                      </div>
                 </div>
 
-                <div className="flex justify-end pt-6">
+                    <div className="flex justify-end pt-4">
                   <button
                     onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                        disabled={isSaving}
                   >
-                    Save Program
+                        {isSaving ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               </div>
+                ))}
             </div>
           )}
         </div>

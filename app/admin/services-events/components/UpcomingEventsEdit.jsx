@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import ImageUpload from "../../../../components/@admin/ImageUpload";
+import {
+  fetchUpcomingEventsSection,
+  updateUpcomingEventsSection,
+} from "@/lib/services/servicesEventsService";
+import { formatDisplayText } from "@/lib/servicesEventsFormData";
 
 export default function UpcomingEventsEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -29,6 +35,27 @@ export default function UpcomingEventsEdit() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingEventId, setEditingEventId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchUpcomingEventsSection();
+        setSectionContent(data);
+      } catch (err) {
+        console.error("Error fetching upcoming events section data:", err);
+        setError("Failed to load content. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +68,16 @@ export default function UpcomingEventsEdit() {
       ...prev,
       events: prev.events.map((event) =>
         event.id === id ? { ...event, [name]: value } : event
+      ),
+    }));
+  };
+
+  // Handler for image upload completion
+  const handleImageUploaded = (imageUrl, id) => {
+    setSectionContent((prev) => ({
+      ...prev,
+      events: prev.events.map((event) =>
+        event.id === id ? { ...event, image: imageUrl } : event
       ),
     }));
   };
@@ -69,12 +106,38 @@ export default function UpcomingEventsEdit() {
     setEditingEventId(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+
+      const updatedData = await updateUpcomingEventsSection(sectionContent);
+      setSectionContent(updatedData);
     setIsEditing(false);
     setEditingEventId(null);
-    console.log("Saved upcoming events content:", sectionContent);
-    // API call would go here
+    } catch (err) {
+      console.error("Error saving upcoming events section data:", err);
+      setError("Failed to save changes. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="font-medium text-gray-800">Upcoming Events Section</h3>
+        </div>
+        <div className="p-8 bg-white flex justify-center items-center">
+          <div className="animate-pulse text-center">
+            <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-40 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg">
@@ -86,10 +149,17 @@ export default function UpcomingEventsEdit() {
             setEditingEventId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
 
       {!isEditing ? (
         <div className="p-8 bg-white">
@@ -97,9 +167,6 @@ export default function UpcomingEventsEdit() {
             <h3 className="text-2xl font-semibold mb-6">
               {sectionContent.heading}
             </h3>
-            <p className="mb-8 whitespace-pre-line">
-              {sectionContent.description}
-            </p>
 
             <div className="space-y-8 h-fit pr-2">
               {sectionContent.events.map((event) => (
@@ -113,7 +180,7 @@ export default function UpcomingEventsEdit() {
                         <img
                           src={event.image}
                           alt={event.title}
-                          className="w-full h-[600px] object-cover"
+                          className="w-full h-[300px] md:h-[400px] object-cover"
                         />
                       )}
                     </div>
@@ -121,8 +188,8 @@ export default function UpcomingEventsEdit() {
                       <h3 className="text-xl font-medium mb-3">
                         {event.title}
                       </h3>
-                      <p className="text-gray-600 mb-4 line-clamp-3">
-                        {event.description}
+                      <p className="text-gray-600 mb-4">
+                        {formatDisplayText(event.description)}
                       </p>
 
                       <div className="space-y-1 text-sm">
@@ -257,52 +324,44 @@ export default function UpcomingEventsEdit() {
                       </div>
                     </div>
                   ))}
-                </div>
               </div>
 
-              <div className="flex justify-end pt-6">
+                <div className="flex justify-end pt-4 mt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
                 >
-                  Save Changes
+                    {isSaving ? "Saving..." : "Save Changes"}
                 </button>
+                </div>
               </div>
             </>
           ) : (
-            <div className="max-w-2xl">
+            <div>
               <div className="flex justify-between items-center mb-6">
-                <h4 className="font-medium text-gray-900">
-                  {sectionContent.events.find((e) => e.id === editingEventId)
-                    ?.title
-                    ? `Edit Event: ${
-                        sectionContent.events.find(
-                          (e) => e.id === editingEventId
-                        ).title
-                      }`
-                    : "Add New Event"}
-                </h4>
+                <h4 className="font-medium text-gray-900">Edit Event</h4>
                 <button
                   onClick={() => setEditingEventId(null)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
                 >
-                  &times;
+                  Back to List
                 </button>
               </div>
 
-              <div className="space-y-4">
+              {sectionContent.events
+                .filter((event) => event.id === editingEventId)
+                .map((event) => (
+                  <div key={event.id} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Event Title
+                        Title
                   </label>
                   <input
                     type="text"
                     name="title"
-                    value={
-                      sectionContent.events.find((e) => e.id === editingEventId)
-                        ?.title || ""
-                    }
-                    onChange={(e) => handleEventChange(e, editingEventId)}
+                        value={event.title}
+                        onChange={(e) => handleEventChange(e, event.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Event title"
                   />
@@ -314,17 +373,15 @@ export default function UpcomingEventsEdit() {
                   </label>
                   <textarea
                     name="description"
-                    value={
-                      sectionContent.events.find((e) => e.id === editingEventId)
-                        ?.description || ""
-                    }
-                    onChange={(e) => handleEventChange(e, editingEventId)}
-                    rows={5}
+                        value={event.description}
+                        onChange={(e) => handleEventChange(e, event.id)}
+                        rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Event description"
                   />
                 </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Location
@@ -332,13 +389,10 @@ export default function UpcomingEventsEdit() {
                   <input
                     type="text"
                     name="location"
-                    value={
-                      sectionContent.events.find((e) => e.id === editingEventId)
-                        ?.location || ""
-                    }
-                    onChange={(e) => handleEventChange(e, editingEventId)}
+                          value={event.location}
+                          onChange={(e) => handleEventChange(e, event.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. Parish House Indianapolis."
+                          placeholder="Event location"
                   />
                 </div>
 
@@ -349,46 +403,38 @@ export default function UpcomingEventsEdit() {
                   <input
                     type="text"
                     name="date"
-                    value={
-                      sectionContent.events.find((e) => e.id === editingEventId)
-                        ?.date || ""
-                    }
-                    onChange={(e) => handleEventChange(e, editingEventId)}
+                          value={event.date}
+                          onChange={(e) => handleEventChange(e, event.id)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="e.g. To Be Dated(TBD) or March 15th, 2025"
+                          placeholder="e.g. May 15, 2024"
                   />
+                      </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image Path
+                        Event Image
                   </label>
-                  <input
-                    type="text"
-                    name="image"
-                    value={
-                      sectionContent.events.find((e) => e.id === editingEventId)
-                        ?.image || ""
-                    }
-                    onChange={(e) => handleEventChange(e, editingEventId)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="/images/your-image.jpg"
-                  />
-                  <p className="mt-1 text-sm text-gray-500">
-                    Enter the path to the image. Images should be in the public
-                    directory.
-                  </p>
+                      <ImageUpload
+                        section={`services-events-event-${event.id}`}
+                        onImageUploaded={(imageUrl) =>
+                          handleImageUploaded(imageUrl, event.id)
+                        }
+                        existingImageUrl={event.image}
+                      />
                 </div>
 
-                <div className="flex justify-end pt-6">
+                    <div className="flex justify-end pt-4">
                   <button
                     onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                        disabled={isSaving}
                   >
-                    Save Event
+                        {isSaving ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               </div>
+                ))}
             </div>
           )}
         </div>

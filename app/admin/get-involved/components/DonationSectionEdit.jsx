@@ -211,11 +211,11 @@ export default function DonationSectionEdit() {
                 Bible Verse Background Image
               </label>
 
-              <ImageUpload
-                section="donation"
-                onImageUploaded={handleImageUploaded}
-                existingImageUrl={sectionContent.bibleVerseBackgroundImage}
-              />
+                  <ImageUpload
+                    section="donation"
+                    onImageUploaded={handleImageUploaded}
+                    existingImageUrl={sectionContent.bibleVerseBackgroundImage}
+                  />
             </div>
 
             <div>

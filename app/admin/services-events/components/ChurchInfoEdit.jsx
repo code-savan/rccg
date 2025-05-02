@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  fetchChurchInfoSection,
+  updateChurchInfoSection,
+} from "@/lib/services/servicesEventsService";
+import { formatDisplayText } from "@/lib/servicesEventsFormData";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function ChurchInfoEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -24,6 +30,29 @@ export default function ChurchInfoEdit() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingContactId, setEditingContactId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchChurchInfoSection();
+        if (data) {
+          setSectionContent(data);
+        }
+      } catch (err) {
+        console.error("Error fetching church info section data:", err);
+        setError("Failed to load content. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,14 +118,23 @@ export default function ChurchInfoEdit() {
   };
 
   const handleAddContact = () => {
+    // Ensure contacts is always an array
+    const currentContacts = Array.isArray(sectionContent.contacts)
+      ? sectionContent.contacts
+      : [];
+
     const newContact = {
-      id: Math.max(0, ...sectionContent.contacts.map((c) => c.id)) + 1,
+      id:
+        currentContacts.length > 0
+          ? Math.max(0, ...currentContacts.map((c) => c.id || 0)) + 1
+          : 1,
       label: "",
       value: "",
     };
+
     setSectionContent((prev) => ({
       ...prev,
-      contacts: [...prev.contacts, newContact],
+      contacts: [...currentContacts, newContact],
     }));
     setEditingContactId(newContact.id);
   };
@@ -109,28 +147,72 @@ export default function ChurchInfoEdit() {
     setEditingContactId(null);
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    setEditingContactId(null);
-    console.log("Saved church info content:", sectionContent);
-    // API call would go here
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+
+      const updatedData = await updateChurchInfoSection(sectionContent);
+      if (updatedData) {
+        setSectionContent(updatedData);
+      }
+      setIsEditing(false);
+      setEditingContactId(null);
+    } catch (err) {
+      console.error("Error saving church info section data:", err);
+      setError("Failed to save changes. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const renderContactValue = (contact) => {
-    if (contact.values) {
+    if (!contact) {
+      return <span className="text-gray-900">No data</span>;
+    }
+
+    // Choose text color based on isEditing
+    const textColorClass = !isEditing ? "text-white" : "text-gray-900";
+
+    if (contact.values && Array.isArray(contact.values)) {
       return (
         <div className="flex flex-col gap-2">
           {contact.values.map((value, index) => (
-            <span key={index} className="text-gray-900">
-              {value}
+            <span key={index} className={textColorClass}>
+              {!isEditing ? formatDisplayText(value || "") : value}
             </span>
           ))}
         </div>
       );
     } else {
-      return <span className="text-gray-900">{contact.value}</span>;
+      return (
+        <span className={textColorClass}>
+          {!isEditing
+            ? formatDisplayText(contact.value || "")
+            : contact.value || ""}
+        </span>
+      );
     }
   };
+
+  // Add loading state
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="font-medium text-gray-800">
+            Church Information Section
+          </h3>
+        </div>
+        <div className="p-8 bg-white flex justify-center items-center">
+          <div className="animate-pulse text-center">
+            <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-40 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -144,43 +226,69 @@ export default function ChurchInfoEdit() {
             setEditingContactId(null);
           }}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
       </div>
 
+      {error && (
+        <div className="p-4 bg-red-50 border-b border-red-100 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
+
       {!isEditing ? (
-        <div className="p-8 bg-white">
-          <div className="max-w-3xl mx-auto">
-            <div className="rounded-lg bg-gray-100 p-6">
-              <h2 className="text-xl font-semibold mb-3">
-                {sectionContent.heading}
-              </h2>
-              <p className="text-lg text-gray-700 mb-6">
-                {sectionContent.date}
-              </p>
+        <div className="p-4 bg-white">
+          <div className="mx-auto w-full">
+            <div className="relative rounded-xl overflow-hidden">
+              {sectionContent.backgroundImage && (
+                <img
+                  src={sectionContent.backgroundImage}
+                  alt="Church Info Background"
+                  className="w-full h-[400px] md:h-[500px] object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center p-4 md:p-8">
+                <div className="max-w-5xl mx-auto text-white">
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2">
+                    {formatDisplayText(sectionContent.heading)}
+                  </h2>
+                  <p className="text-md mb-4">
+                    {formatDisplayText(sectionContent.date)}
+                  </p>
 
-              <div className="mb-6">
-                <p className="text-gray-600 mb-3">
-                  {sectionContent.bibleVerse}
-                </p>
-                <p className="text-gray-900 font-medium text-right">
-                  {sectionContent.bibleReference}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                {sectionContent.contacts.map((contact) => (
-                  <div key={contact.id} className="flex justify-between">
-                    <span className="text-gray-700">{contact.label}</span>
-                    {renderContactValue(contact)}
+                  <div className="border-l-4 border-white pl-3 mb-6">
+                    <blockquote className="text-sm md:text-base italic whitespace-pre-line">
+                      {formatDisplayText(sectionContent.bibleVerse)}
+                      <footer className="mt-1 font-semibold">
+                        — {formatDisplayText(sectionContent.bibleReference)}
+                      </footer>
+                    </blockquote>
                   </div>
-                ))}
+
+                  <div className="space-y-1 text-sm md:text-base">
+                    {Array.isArray(sectionContent.contacts) ? (
+                      sectionContent.contacts.map((contact) => (
+                        <div key={contact.id} className="flex justify-between">
+                          <span className="text-white font-medium">
+                            {contact.label}
+                          </span>
+                          {renderContactValue(contact)}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-white">
+                        No contact information available
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 text-xs text-gray-500">
-              <p>* Background image preview not shown</p>
+            <div className="mt-2 text-xs text-gray-500">
+              <p>* Background image preview shown above</p>
               <p>Current image: {sectionContent.backgroundImage}</p>
             </div>
           </div>
@@ -248,20 +356,19 @@ export default function ChurchInfoEdit() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Background Image Path
+                    Background Image
                   </label>
-                  <input
-                    type="text"
-                    name="backgroundImage"
-                    value={sectionContent.backgroundImage}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="/images/your-image.jpg"
+                  <ImageUpload
+                    onImageUploaded={(url) => {
+                      setSectionContent((prev) => ({
+                        ...prev,
+                        backgroundImage: url,
+                      }));
+                    }}
+                    section="church-info"
+                    existingImageUrl={sectionContent.backgroundImage}
+                    className="mt-1"
                   />
-                  <p className="mt-1 text-sm text-gray-500">
-                    Enter the path to the image. Images should be in the public
-                    directory.
-                  </p>
                 </div>
               </div>
 
@@ -279,57 +386,54 @@ export default function ChurchInfoEdit() {
                 </div>
 
                 <div className="space-y-4">
-                  {sectionContent.contacts.map((contact) => (
-                    <div
-                      key={contact.id}
-                      className="border border-gray-200 rounded-lg p-4"
-                    >
-                      <div className="flex justify-between mb-3">
-                        <h5 className="font-medium">
-                          {contact.label || "New Contact"}
-                        </h5>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => setEditingContactId(contact.id)}
-                            className="px-3 py-1.5 text-sm border border-gray-200 rounded-md hover:bg-gray-100"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteContact(contact.id)}
-                            className="px-3 py-1.5 text-sm border border-red-200 text-red-600 rounded-md hover:bg-red-50"
-                          >
-                            Delete
-                          </button>
+                  {Array.isArray(sectionContent.contacts) ? (
+                    sectionContent.contacts.map((contact) => (
+                      <div
+                        key={contact.id}
+                        className="border border-gray-200 rounded-lg p-4"
+                      >
+                        <div className="flex justify-between mb-3">
+                          <h5 className="font-medium">
+                            {contact.label || "New Contact"}
+                          </h5>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => setEditingContactId(contact.id)}
+                              className="px-3 py-1.5 text-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteContact(contact.id)}
+                              className="px-3 py-1.5 text-sm border border-red-200 text-red-600 rounded-md hover:bg-red-50"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-gray-700 mr-2">
+                            {contact.label}:
+                          </span>
+                          {renderContactValue(contact)}
                         </div>
                       </div>
-                      <div className="flex items-center">
-                        <span className="text-gray-700 mr-2">
-                          {contact.label}
-                        </span>
-                        {contact.values ? (
-                          <div className="flex flex-col gap-1">
-                            {contact.values.map((value, index) => (
-                              <span key={index} className="text-gray-900">
-                                {value}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-gray-900">{contact.value}</span>
-                        )}
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">
+                      No contacts available. Add one below.
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 
               <div className="flex justify-end pt-6">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </>
@@ -446,9 +550,10 @@ export default function ChurchInfoEdit() {
                 <div className="flex justify-end pt-6">
                   <button
                     onClick={handleSave}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    disabled={isSaving}
                   >
-                    Save Contact
+                    {isSaving ? "Saving..." : "Save Contact"}
                   </button>
                 </div>
               </div>

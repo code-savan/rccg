@@ -32,7 +32,24 @@ export async function GET() {
           church_info_background_image:
             defaultServicesEventsData.church_info_background_image,
         };
-        return NextResponse.json(mapDBToChurchInfoSection(defaultData));
+
+        // Wrap in try-catch to handle any parsing errors
+        try {
+          return NextResponse.json(mapDBToChurchInfoSection(defaultData));
+        } catch (parseError) {
+          console.error("Error parsing default church info data:", parseError);
+          // Return a basic response that won't cause client-side errors
+          return NextResponse.json({
+            heading: defaultServicesEventsData.church_info_heading,
+            date: defaultServicesEventsData.church_info_date,
+            bibleVerse: defaultServicesEventsData.church_info_bible_verse,
+            bibleReference:
+              defaultServicesEventsData.church_info_bible_reference,
+            contacts: [],
+            backgroundImage:
+              defaultServicesEventsData.church_info_background_image,
+          });
+        }
       }
 
       return NextResponse.json(
@@ -41,9 +58,43 @@ export async function GET() {
       );
     }
 
-    // Map database fields to component state
-    const mappedData = mapDBToChurchInfoSection(data);
-    return NextResponse.json(mappedData);
+    // Ensure data is properly formatted with fallbacks
+    const sanitizedData = {
+      church_info_heading:
+        data?.church_info_heading ||
+        defaultServicesEventsData.church_info_heading,
+      church_info_date:
+        data?.church_info_date || defaultServicesEventsData.church_info_date,
+      church_info_bible_verse:
+        data?.church_info_bible_verse ||
+        defaultServicesEventsData.church_info_bible_verse,
+      church_info_bible_reference:
+        data?.church_info_bible_reference ||
+        defaultServicesEventsData.church_info_bible_reference,
+      church_info_contacts:
+        data?.church_info_contacts ||
+        defaultServicesEventsData.church_info_contacts,
+      church_info_background_image:
+        data?.church_info_background_image ||
+        defaultServicesEventsData.church_info_background_image,
+    };
+
+    // Safely map the data and catch any potential errors
+    try {
+      const mappedData = mapDBToChurchInfoSection(sanitizedData);
+      return NextResponse.json(mappedData);
+    } catch (parseError) {
+      console.error("Error parsing church info data:", parseError);
+      // Return a basic response that won't cause client-side errors
+      return NextResponse.json({
+        heading: sanitizedData.church_info_heading,
+        date: sanitizedData.church_info_date,
+        bibleVerse: sanitizedData.church_info_bible_verse,
+        bibleReference: sanitizedData.church_info_bible_reference,
+        contacts: [],
+        backgroundImage: sanitizedData.church_info_background_image,
+      });
+    }
   } catch (error) {
     console.error("Server error fetching church info section data:", error);
     return NextResponse.json(
@@ -58,8 +109,25 @@ export async function PUT(request) {
   try {
     const body = await request.json();
 
-    // Map component state to database fields
-    const dbData = mapChurchInfoSectionToDB(body);
+    // Validate input data
+    if (!body || typeof body !== "object") {
+      return NextResponse.json(
+        { error: "Invalid input data" },
+        { status: 400 }
+      );
+    }
+
+    // Safely map component state to database fields
+    let dbData;
+    try {
+      dbData = mapChurchInfoSectionToDB(body);
+    } catch (parseError) {
+      console.error("Error mapping church info data to DB format:", parseError);
+      return NextResponse.json(
+        { error: "Failed to process input data" },
+        { status: 400 }
+      );
+    }
 
     // Find the record to update
     const { data: existingData, error: fetchError } = await supabase
@@ -125,9 +193,33 @@ export async function PUT(request) {
       );
     }
 
-    // Map database fields back to component state
-    const mappedData = mapDBToChurchInfoSection(data[0]);
-    return NextResponse.json(mappedData);
+    // Ensure we have data to work with
+    if (!data || !data[0]) {
+      console.error("No data returned from update operation");
+      return NextResponse.json(
+        { error: "No data returned from update operation" },
+        { status: 500 }
+      );
+    }
+
+    // Safely map database fields back to component state
+    try {
+      const mappedData = mapDBToChurchInfoSection(data[0]);
+      return NextResponse.json(mappedData);
+    } catch (parseError) {
+      console.error("Error mapping DB data to component state:", parseError);
+      // Return the basic data that won't cause client-side errors
+      return NextResponse.json({
+        heading: data[0].church_info_heading || body.heading || "",
+        date: data[0].church_info_date || body.date || "",
+        bibleVerse: data[0].church_info_bible_verse || body.bibleVerse || "",
+        bibleReference:
+          data[0].church_info_bible_reference || body.bibleReference || "",
+        contacts: body.contacts || [],
+        backgroundImage:
+          data[0].church_info_background_image || body.backgroundImage || "",
+      });
+    }
   } catch (error) {
     console.error("Server error updating church info section data:", error);
     return NextResponse.json(

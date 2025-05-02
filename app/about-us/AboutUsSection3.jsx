@@ -18,15 +18,17 @@ export default function AboutUsSection3() {
               as="p"
               className="self-stretch text-center !font-poppins text-[16px] font-light leading-[130%] !text-charcoal md:text-[15px] sm:text-[14px]"
             >
-              At RCCG Rod of God Parish, our Youth Church is a vibrant community where young people grow in faith, purpose, and fellowship. Join us and be part of a movement for God!
+              At RCCG Rod of God Parish, our Youth Church is a vibrant community
+              where young people grow in faith, purpose, and fellowship. Join us
+              and be part of a movement for God!
             </Text>
           </div>
         </div>
         <Img
-          src="hero.jpeg"
+          src="H13.jpeg"
           width={1440}
           height={1052}
-          alt="Bddd6da0297a"
+          alt="NextGen Ministry"
           className="h-[1052px] w-full object-cover md:h-auto"
         />
       </div>

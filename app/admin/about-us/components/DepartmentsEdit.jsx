@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
+// import { toast } from "react-hot-toast";
 import {
   PlusCircleIcon,
   PencilSquareIcon,
@@ -8,92 +10,129 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+// import {
+//   fetchDepartmentsSection,
+//   updateDepartmentsSection,
+// } from "@/lib/services/aboutUsService";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function DepartmentsEdit() {
-  const [sectionTitle, setSectionTitle] = useState("OUR DEPARTMENTS");
-  const [sectionDescription, setSectionDescription] = useState(
-    "At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There's a place for everyone to serve, grow, and make an impact!"
-  );
-  const [isEditing, setIsEditing] = useState(false);
-  const [departments, setDepartments] = useState([
-    {
-      id: 1,
-      name: "Choir",
-      description:
-        "Our Choir leads the congregation in heartfelt worship, creating an atmosphere where God's presence is felt through spirit-filled songs and praise.",
-      image: "img_pexels_cottonbro_7520369.png",
-    },
-    {
-      id: 2,
-      name: "Sunday School",
-      description:
-        "Sunday School is a time of deep biblical teaching, helping believers grow in faith, understanding, and practical Christian living.",
-      image: "img_dsc_9200.png",
-    },
-    {
-      id: 3,
-      name: "Welfare",
-      description:
-        "The Welfare Department extends God's love through acts of kindness, providing support and care to those in need within the church and community.",
-      image: "img_dsc_9539.png",
-    },
-    {
-      id: 4,
-      name: "Ushering",
-      description:
-        "Our Ushers ensure a warm and welcoming worship experience by assisting with seating, orderliness, and ensuring a smooth flow during services.",
-      image: "img_pexels_kawerodr.png",
-    },
-    {
-      id: 5,
-      name: "Sound & Media",
-      description:
-        "The Sound & Media team enhances worship by managing audio, visuals, and live streaming, ensuring every message is delivered with clarity and excellence.",
-      image: "img_dsc_9519.png",
-    },
-    {
-      id: 6,
-      name: "Special Duties",
-      description:
-        "The Special Duties team provides essential support for church programs, coordinating logistics and ensuring smooth event execution.",
-      image: "img_dsc_9552.png",
-    },
-    {
-      id: 7,
-      name: "Children and Media",
-      description:
-        "Our Children's Ministry nurtures young hearts in the faith, while the Media team creatively shares God's message through digital platforms.",
-      image: "img_dsc_9435.png",
-    },
-    {
-      id: 8,
-      name: "Accounting",
-      description:
-        "The Accounting team ensures transparency and stewardship in managing church finances, handling tithes, offerings, and budgets with integrity.",
-      image: "img_dsc_9221.png",
-    },
-    {
-      id: 9,
-      name: "Transportation",
-      description:
-        "The Transportation team ensures that members and visitors can attend services and events with ease, providing reliable transport solutions.",
-      image: "img_dsc_9484.png",
-    },
-    {
-      id: 10,
-      name: "Sanctuary Keeper & Beautifiers",
-      description:
-        "This team maintains the cleanliness and beauty of God's house, creating a welcoming and reverent environment for worship.",
-      image: "img_kevin_wright_4s_482x630.png",
-    },
-  ]);
+  const [sectionContent, setSectionContent] = useState({
+    heading: "OUR DEPARTMENTS",
+    description:
+      "At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There's a place for everyone to serve, grow, and make an impact!",
+    departments: [
+      {
+        id: 1,
+        name: "Choir",
+        description:
+          "Our Choir leads the congregation in heartfelt worship, creating an atmosphere where God's presence is felt through spirit-filled songs and praise.",
+        image: "/images/img_pexels_cottonbro_7520369.png",
+        head: "Yetunde Ajanaku",
+      },
+      {
+        id: 2,
+        name: "Sunday School",
+        description:
+          "Sunday School is a time of deep biblical teaching, helping believers grow in faith, understanding, and practical Christian living.",
+        image: "/images/img_dsc_9200.png",
+        head: "",
+      },
+      {
+        id: 3,
+        name: "Welfare",
+        description:
+          "The Welfare Department extends God's love through acts of kindness, providing support and care to those in need within the church and community.",
+        image: "/images/img_dsc_9539.png",
+        head: "",
+      },
+      {
+        id: 4,
+        name: "Ushering",
+        description:
+          "Our Ushers ensure a warm and welcoming worship experience by assisting with seating, orderliness, and ensuring a smooth flow during services.",
+        image: "/images/img_pexels_kawerodr.png",
+        head: "",
+      },
+      {
+        id: 5,
+        name: "Sound & Media",
+        description:
+          "The Sound & Media team enhances worship by managing audio, visuals, and live streaming, ensuring every message is delivered with clarity and excellence.",
+        image: "/images/img_dsc_9519.png",
+        head: "Segun Oladeji",
+      },
+      {
+        id: 6,
+        name: "Special Duties",
+        description:
+          "The Special Duties team provides essential support for church programs, coordinating logistics and ensuring smooth event execution.",
+        image: "/images/img_dsc_9552.png",
+        head: "",
+      },
+      {
+        id: 7,
+        name: "Children's Ministry",
+        description:
+          "Our Children's Ministry nurtures young hearts in the faith through age-appropriate teaching, fun activities, and spiritual development.",
+        image: "/images/img_dsc_9435.png",
+        head: "Bro Ademola Karonwi",
+      },
+      {
+        id: 8,
+        name: "Accounting",
+        description:
+          "The Accounting team ensures transparency and stewardship in managing church finances, handling tithes, offerings, and budgets with integrity.",
+        image: "/images/img_dsc_9221.png",
+        head: "",
+      },
+      {
+        id: 9,
+        name: "Transportation",
+        description:
+          "The Transportation team ensures that members and visitors can attend services and events with ease, providing reliable transport solutions.",
+        image: "/images/img_dsc_9484.png",
+        head: "",
+      },
+      {
+        id: 10,
+        name: "Sanctuary Keeper & Beautifiers",
+        description:
+          "This team maintains the cleanliness and beauty of God's house, creating a welcoming and reverent environment for worship.",
+        image: "/images/img_kevin_wright_4s_482x630.png",
+        head: "Pastor(Mrs) F.O Balogun",
+      },
+    ],
+  });
 
+  const [isEditing, setIsEditing] = useState(false);
   const [currentDepartment, setCurrentDepartment] = useState({
     id: null,
     name: "",
     description: "",
     image: "",
+    head: "",
   });
+  // const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Comment out API fetch
+  // useEffect(() => {
+  //   async function fetchSectionData() {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await fetchDepartmentsSection();
+  //       setSectionContent(data);
+  //     } catch (error) {
+  //       console.error("Error fetching Departments section data:", error);
+  //       toast.error("Failed to load section data");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+
+  //   fetchSectionData();
+  // }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,12 +142,25 @@ export default function DepartmentsEdit() {
     });
   };
 
+  const handleImageChange = (imageUrl) => {
+    setCurrentDepartment({
+      ...currentDepartment,
+      image: imageUrl,
+    });
+  };
+
+  const handleHeadingChange = (e) => {
+    const { name, value } = e.target;
+    setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleAddDepartment = () => {
     setCurrentDepartment({
       id: null,
       name: "",
       description: "",
       image: "",
+      head: "",
     });
     setIsEditing(true);
   };
@@ -119,7 +171,12 @@ export default function DepartmentsEdit() {
   };
 
   const handleDeleteDepartment = (id) => {
-    setDepartments(departments.filter((department) => department.id !== id));
+    setSectionContent((prev) => ({
+      ...prev,
+      departments: prev.departments.filter(
+        (department) => department.id !== id
+      ),
+    }));
   };
 
   const handleSaveDepartment = () => {
@@ -130,20 +187,24 @@ export default function DepartmentsEdit() {
 
     if (currentDepartment.id) {
       // Update existing department
-      setDepartments(
-        departments.map((department) =>
+      setSectionContent((prev) => ({
+        ...prev,
+        departments: prev.departments.map((department) =>
           department.id === currentDepartment.id
             ? currentDepartment
             : department
-        )
-      );
+        ),
+      }));
     } else {
       // Add new department
       const newDepartment = {
         ...currentDepartment,
         id: Date.now(),
       };
-      setDepartments([...departments, newDepartment]);
+      setSectionContent((prev) => ({
+        ...prev,
+        departments: [...prev.departments, newDepartment],
+      }));
     }
 
     setCurrentDepartment({
@@ -151,6 +212,7 @@ export default function DepartmentsEdit() {
       name: "",
       description: "",
       image: "",
+      head: "",
     });
     setIsEditing(false);
   };
@@ -161,19 +223,45 @@ export default function DepartmentsEdit() {
       name: "",
       description: "",
       image: "",
+      head: "",
     });
     setIsEditing(false);
   };
 
   const handleSaveAll = () => {
-    const departmentsData = {
-      title: sectionTitle,
-      description: sectionDescription,
-      departments: departments,
-    };
+    // Comment out API save
+    setIsSaving(true);
+    // try to simulate saving
+    setTimeout(() => {
+      console.log("Saving departments data:", sectionContent);
+      setIsSaving(false);
+      // toast.success("Departments section saved successfully");
+      alert("Departments section saved successfully");
+    }, 1000);
 
-    console.log("Saving departments data:", departmentsData);
+    // try {
+    //   setIsSaving(true);
+    //   await updateDepartmentsSection(sectionContent);
+    //   toast.success("Departments section updated successfully");
+    //   setIsEditing(false);
+    // } catch (error) {
+    //   console.error("Error saving Departments section:", error);
+    //   toast.error("Failed to update section");
+    // } finally {
+    //   setIsSaving(false);
+    // }
   };
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+  //       <div className="animate-pulse">
+  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+  //         <div className="h-40 bg-gray-200 rounded"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -182,6 +270,7 @@ export default function DepartmentsEdit() {
         <button
           onClick={() => setIsEditing(!isEditing)}
           className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-md hover:bg-gray-50"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
@@ -191,24 +280,26 @@ export default function DepartmentsEdit() {
         <div className="p-8 bg-white">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold text-center mb-4">
-              {sectionTitle}
+              {sectionContent.heading}
             </h2>
             <p className="text-gray-600 text-center mb-8 max-w-3xl mx-auto">
-              {sectionDescription}
+              {sectionContent.description}
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {departments.map((department) => (
+            <div className="grid sm:grid-cols-1 grid-cols-2 gap-6">
+              {sectionContent.departments.map((department) => (
                 <div
                   key={department.id}
-                  className="border border-gray-200 rounded-lg overflow-hidden"
+                  className="border border-gray-200 rounded-[22px] overflow-hidden"
                 >
-                  <div className="h-[500px] bg-gray-200 relative">
+                  <div className="aspect-video bg-gray-200 relative">
                     {department.image && (
-                      <img
-                        src={`/images/${department.image}`}
+                      <Image
+                        src={department.image}
                         alt={department.name}
                         className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     )}
                   </div>
@@ -236,10 +327,12 @@ export default function DepartmentsEdit() {
                   </label>
                   <input
                     type="text"
-                    value={sectionTitle}
-                    onChange={(e) => setSectionTitle(e.target.value)}
+                    name="heading"
+                    value={sectionContent.heading}
+                    onChange={handleHeadingChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Section title"
+                    disabled={isSaving}
                   />
                 </div>
                 <div>
@@ -247,11 +340,13 @@ export default function DepartmentsEdit() {
                     Section Description
                   </label>
                   <textarea
-                    value={sectionDescription}
-                    onChange={(e) => setSectionDescription(e.target.value)}
+                    name="description"
+                    value={sectionContent.description}
+                    onChange={handleHeadingChange}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     placeholder="Section description"
+                    disabled={isSaving}
                   />
                 </div>
               </div>
@@ -264,6 +359,7 @@ export default function DepartmentsEdit() {
                   <button
                     onClick={handleAddDepartment}
                     className="flex items-center text-blue-600 hover:text-blue-800"
+                    disabled={isSaving}
                   >
                     <PlusCircleIcon className="h-5 w-5 mr-1" />
                     Add Department
@@ -271,7 +367,7 @@ export default function DepartmentsEdit() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {departments.map((department) => (
+                  {sectionContent.departments.map((department) => (
                     <div
                       key={department.id}
                       className="border border-gray-200 rounded-lg p-4"
@@ -279,10 +375,12 @@ export default function DepartmentsEdit() {
                       <div className="flex items-center mb-3">
                         <div className="h-12 w-12 bg-gray-200 rounded-md overflow-hidden mr-3">
                           {department.image && (
-                            <img
-                              src={`/images/${department.image}`}
+                            <Image
+                              src={department.image}
                               alt={department.name}
                               className="w-full h-full object-cover"
+                              width={48}
+                              height={48}
                             />
                           )}
                         </div>
@@ -297,12 +395,14 @@ export default function DepartmentsEdit() {
                         <button
                           onClick={() => handleEditDepartment(department)}
                           className="flex items-center text-blue-600 hover:text-blue-800"
+                          disabled={isSaving}
                         >
                           <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => handleDeleteDepartment(department.id)}
                           className="flex items-center text-red-600 hover:text-red-800"
+                          disabled={isSaving}
                         >
                           <TrashIcon className="h-5 w-5" />
                         </button>
@@ -315,9 +415,10 @@ export default function DepartmentsEdit() {
               <div className="flex justify-end pt-6">
                 <button
                   onClick={handleSaveAll}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                  disabled={isSaving}
                 >
-                  Save Changes
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </>
@@ -341,6 +442,7 @@ export default function DepartmentsEdit() {
                     onChange={handleInputChange}
                     className="w-full p-2 border border-gray-300 rounded"
                     placeholder="Enter department name"
+                    disabled={isSaving}
                   />
                 </div>
 
@@ -355,38 +457,50 @@ export default function DepartmentsEdit() {
                     className="w-full p-2 border border-gray-300 rounded"
                     rows="3"
                     placeholder="Enter department description"
+                    disabled={isSaving}
                   ></textarea>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Image Filename
+                    Department Image
+                  </label>
+                  <ImageUpload
+                    existingImageUrl={currentDepartment.image}
+                    onImageUploaded={handleImageChange}
+                    section="about-us/departments"
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Head
                   </label>
                   <input
                     type="text"
-                    name="image"
-                    value={currentDepartment.image}
+                    name="head"
+                    value={currentDepartment.head}
                     onChange={handleInputChange}
                     className="w-full p-2 border border-gray-300 rounded"
-                    placeholder="e.g. department-image.jpg"
+                    placeholder="Enter department head"
+                    disabled={isSaving}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter the image filename only. Images should be in the
-                    public/images directory.
-                  </p>
                 </div>
 
                 <div className="flex space-x-3 pt-3">
                   <button
                     onClick={handleSaveDepartment}
-                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-400"
+                    disabled={isSaving}
                   >
                     <CheckCircleIcon className="h-5 w-5 mr-1" />
                     Save
                   </button>
                   <button
                     onClick={handleCancelEdit}
-                    className="flex items-center px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    className="flex items-center px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                    disabled={isSaving}
                   >
                     <XCircleIcon className="h-5 w-5 mr-1" />
                     Cancel

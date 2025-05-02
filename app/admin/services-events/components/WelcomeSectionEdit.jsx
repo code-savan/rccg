@@ -6,6 +6,7 @@ import {
   fetchWelcomeSection,
   updateWelcomeSection,
 } from "@/lib/services/servicesEventsService";
+import { formatDisplayText } from "@/lib/servicesEventsFormData";
 
 export default function WelcomeSectionEdit() {
   const [sectionContent, setSectionContent] = useState({
@@ -103,24 +104,26 @@ export default function WelcomeSectionEdit() {
 
       {!isEditing ? (
         <div className="p-8 bg-white">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="w-full md:w-1/2">
-              <h1 className="text-4xl font-semibold text-gray-900 whitespace-pre-line mb-4">
-                {sectionContent.heading}
-              </h1>
-              <p className="text-xl text-gray-600">
-                {sectionContent.subheading}
-              </p>
-            </div>
-            <div className="w-full md:w-1/2">
-              <div className="aspect-[628/516] rounded-xl bg-gray-100 overflow-hidden relative">
-                {sectionContent.backgroundImage && (
-                  <img
-                    src={sectionContent.backgroundImage}
-                    alt="Welcome section"
-                    className="w-full h-full object-cover"
-                  />
-                )}
+          <div className="max-w-3xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              <div className="w-full md:w-1/2">
+                <h1 className="text-4xl font-semibold text-gray-900 whitespace-pre-line mb-4">
+                  {formatDisplayText(sectionContent.heading)}
+                </h1>
+                <p className="text-xl text-gray-600">
+                  {formatDisplayText(sectionContent.subheading)}
+                </p>
+              </div>
+              <div className="w-full md:w-1/2">
+                <div className="aspect-[628/516] rounded-xl bg-gray-100 overflow-hidden relative">
+                  {sectionContent.backgroundImage && (
+                    <img
+                      src={sectionContent.backgroundImage}
+                      alt="Welcome section"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
