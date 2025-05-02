@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-// import { toast } from "react-hot-toast";
-// import {
-//   fetchDepartmentHeadsSection,
-//   updateDepartmentHeadsSection,
-// } from "@/lib/services/aboutUsService";
+import { toast } from "react-hot-toast";
+import {
+  fetchDepartmentHeadsSection,
+  updateDepartmentHeadsSection,
+} from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function DepartmentHeadsEdit() {
@@ -14,81 +14,31 @@ export default function DepartmentHeadsEdit() {
     heading: "DEPARTMENT HEADS",
     description:
       "Our department heads coordinate various functions to ensure the smooth operation of our church.",
-    departmentHeads: [
-      {
-        id: 1,
-        name: "Oladipupo Baruwa",
-        role: "HOD Protocol",
-        bio: "",
-        image: "/images/img_dsc_9396.png",
-      },
-      {
-        id: 2,
-        name: "Yetunde Ajanaku",
-        role: "HOD Choir",
-        bio: "",
-        image: "/images/img_dsc_9388.png",
-      },
-      {
-        id: 3,
-        name: "Oloyede Amure",
-        role: "HOD Soccer Team",
-        bio: "",
-        image: "/images/img_dsc_9374.png",
-      },
-      {
-        id: 4,
-        name: "Segun Oladeji",
-        role: "HOD Publication",
-        bio: "",
-        image: "/images/img_dsc_9404.png",
-      },
-      {
-        id: 5,
-        name: "David Ayodele",
-        role: "HOD Drama",
-        bio: "",
-        image: "/images/img_dsc_9420.png",
-      },
-      {
-        id: 6,
-        name: "Pastor(Mrs) F.O Balogun",
-        role: "HOD Sanctuary",
-        bio: "",
-        image: "/images/img_dsc_9495.png",
-      },
-      {
-        id: 7,
-        name: "Bro Ademola Karonwi",
-        role: "HOD Children's Dept.",
-        bio: "",
-        image: "/images/img_dsc_9511.png",
-      },
-    ],
+    departmentHeads: [],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingHeadId, setEditingHeadId] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Comment out API fetch
-  // useEffect(() => {
-  //   async function fetchSectionData() {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await fetchDepartmentHeadsSection();
-  //       setSectionContent(data);
-  //     } catch (error) {
-  //       console.error("Error fetching Department Heads section data:", error);
-  //       toast.error("Failed to load section data");
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
+  // Fetch data from API
+  useEffect(() => {
+    async function fetchSectionData() {
+      try {
+        setIsLoading(true);
+        const data = await fetchDepartmentHeadsSection();
+        setSectionContent(data);
+      } catch (error) {
+        console.error("Error fetching Department Heads section data:", error);
+        toast.error("Failed to load section data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  //   fetchSectionData();
-  // }, []);
+    fetchSectionData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -141,42 +91,31 @@ export default function DepartmentHeadsEdit() {
     setEditingHeadId(null);
   };
 
-  const handleSave = () => {
-    // Comment out API save
-    setIsSaving(true);
-    // try to simulate saving
-    setTimeout(() => {
-      console.log("Saved section content:", sectionContent);
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateDepartmentHeadsSection(sectionContent);
       setIsEditing(false);
       setEditingHeadId(null);
+      toast.success("Department Heads section updated successfully");
+    } catch (error) {
+      console.error("Error saving Department Heads section:", error);
+      toast.error("Failed to update section");
+    } finally {
       setIsSaving(false);
-      alert("Department Heads section saved successfully");
-    }, 1000);
-
-    // try {
-    //   setIsSaving(true);
-    //   await updateDepartmentHeadsSection(sectionContent);
-    //   setIsEditing(false);
-    //   setEditingHeadId(null);
-    //   toast.success("Department Heads section updated successfully");
-    // } catch (error) {
-    //   console.error("Error saving Department Heads section:", error);
-    //   toast.error("Failed to update section");
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
-  //       <div className="animate-pulse">
-  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-  //         <div className="h-40 bg-gray-200 rounded"></div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">

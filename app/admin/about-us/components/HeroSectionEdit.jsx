@@ -1,25 +1,75 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import {
+  fetchHeroSection,
+  updateHeroSection,
+} from "@/lib/services/aboutUsService";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function HeroSectionEdit() {
-  const [sectionContent, setSectionContent] = useState({
-    heading: "There's a home for everyone in christ.",
-    description: "At RCCG Rod of God Parish, we accept everyone.",
-    backgroundImage: "/images/img_group_227.png",
+  const [heroData, setHeroData] = useState({
+    heading: "",
+    subheading: "",
+    backgroundImage: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch data from API
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        const data = await fetchHeroSection();
+        setHeroData(data);
+      } catch (error) {
+        console.error("Error fetching hero section data:", error);
+        toast.error("Failed to load hero section data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSectionContent((prev) => ({ ...prev, [name]: value }));
+    setHeroData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    console.log("Saved section content:", sectionContent);
+  const handleImageChange = (imageUrl) => {
+    setHeroData((prev) => ({ ...prev, backgroundImage: imageUrl }));
   };
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateHeroSection(heroData);
+      setIsEditing(false);
+      toast.success("Hero section updated successfully");
+    } catch (error) {
+      console.error("Error saving hero section:", error);
+      toast.error("Failed to update hero section");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -39,14 +89,14 @@ export default function HeroSectionEdit() {
             <div
               className="rounded-lg h-[300px] bg-cover bg-center mb-6 flex items-center p-8"
               style={{
-                backgroundImage: `url(${sectionContent.backgroundImage})`,
+                backgroundImage: `url(${heroData.backgroundImage})`,
               }}
             >
               <div className="text-white">
                 <h2 className="text-3xl font-medium mb-4">
-                  {sectionContent.heading}
+                  {heroData.heading}
                 </h2>
-                <p className="text-xl">{sectionContent.description}</p>
+                <p className="text-xl">{heroData.subheading}</p>
               </div>
             </div>
           </div>
@@ -60,7 +110,7 @@ export default function HeroSectionEdit() {
               </label>
               <textarea
                 name="heading"
-                value={sectionContent.heading}
+                value={heroData.heading}
                 onChange={handleChange}
                 rows={2}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -69,15 +119,15 @@ export default function HeroSectionEdit() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
+                Subheading
               </label>
               <textarea
-                name="description"
-                value={sectionContent.description}
+                name="subheading"
+                value={heroData.subheading}
                 onChange={handleChange}
                 rows={2}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Section description"
+                placeholder="Subheading"
               />
             </div>
             <div>
@@ -87,7 +137,7 @@ export default function HeroSectionEdit() {
               <input
                 type="text"
                 name="backgroundImage"
-                value={sectionContent.backgroundImage}
+                value={heroData.backgroundImage}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 placeholder="/images/your-image.jpg"

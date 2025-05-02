@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { toast } from "react-hot-toast";
 import ImageUpload from "@/components/@admin/ImageUpload";
 import {
@@ -10,17 +11,16 @@ import {
 
 export default function HistoryEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "Church history",
-    content:
-      "RCCG Rod of God Parish began as a small prayer group in Indianapolis in 2018. Through God's grace and the dedication of our founding members, we've grown into a thriving spiritual family serving our community.\n\nOver the years, we've remained committed to our founding vision of being a church where God's Word is taught with clarity and where all people can find belonging, purpose, and spiritual transformation.",
-    image: "/images/img_verse.png",
+    heading: "",
+    content: "",
+    image: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch section data
+  // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
@@ -43,7 +43,7 @@ export default function HistoryEdit() {
     setSectionContent((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUploaded = (imageUrl) => {
+  const handleImageChange = (imageUrl) => {
     setSectionContent((prev) => ({ ...prev, image: imageUrl }));
   };
 
@@ -54,7 +54,7 @@ export default function HistoryEdit() {
       setIsEditing(false);
       toast.success("History section updated successfully");
     } catch (error) {
-      console.error("Error updating History section:", error);
+      console.error("Error saving History section:", error);
       toast.error("Failed to update section");
     } finally {
       setIsSaving(false);
@@ -66,9 +66,7 @@ export default function HistoryEdit() {
       <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-40 bg-gray-200 rounded mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
@@ -149,7 +147,7 @@ export default function HistoryEdit() {
                 History Image
               </label>
               <ImageUpload
-                onImageUploaded={handleImageUploaded}
+                onImageUploaded={handleImageChange}
                 section="about-us-history"
                 existingImageUrl={sectionContent.image}
               />

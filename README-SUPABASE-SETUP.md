@@ -343,26 +343,29 @@ INSERT INTO about_us (
   'A place to grow in faith and community.',
   '/images/hero.jpeg',
   'ABOUT OUR CHURCH',
-  'RCCG Rod of God Parish is a vibrant, Spirit-filled church committed to building a community of believers passionate about God and dedicated to making a positive impact in Indianapolis and beyond. Our church is part of the Redeemed Christian Church of God global network and upholds its values and mission.\n\nOur services combine powerful worship, prayer, and Biblical teaching in a welcoming environment where everyone belongs. We believe in nurturing spiritual growth at every age and life stage.',
+  "RCCG ROG is a Bible-based, evangelistic, Spirit-empowered church.
+At RCCG ROG, we're all about people, because God is all about people.\n\nOne of the ways we express our love for Him is through our love for people, and we do this by helping people who come to RCCG ROG to grow in their
+relationship with the Lord.\n\nWant to get started? We'd love for you to join us for a service, and we're
+here to help you get connected.",
   'OUR HISTORY',
-  'RCCG Rod of God Parish began as a small prayer group in Indianapolis in 2018. Through God''s grace and the dedication of our founding members, we''ve grown into a thriving spiritual family serving our community.\n\nOver the years, we''ve remained committed to our founding vision of being a church where God''s Word is taught with clarity and where all people can find belonging, purpose, and spiritual transformation.',
+  'RCCG Rod of God Parish was established in [2009] as part of the Redeemed Christian Church of God (RCCG) network, a global church with millions of members worldwide. From humble beginnings, God has blessed our church to grow into a thriving community of worshippers, committed to the Great Commission.\n\nThrough prayer, faith, and dedication, we have expanded our ministries, outreach programs, and impact in Indianapolis and beyond. Today, we continue to build on the vision of holiness, evangelism, and community transformation.',
   '/images/history.jpeg',
-  'OUR MINISTERS',
+  'Our Ministers',
   'Meet our dedicated spiritual leaders who serve and guide our congregation with wisdom and compassion.',
   '[
     {
       "id": 1,
-      "name": "Pastor John Smith",
-      "role": "Senior Pastor",
-      "bio": "Pastor John has served in ministry for over 20 years and is passionate about equipping believers to live out their faith.",
-      "image": "/images/minister1.jpeg"
+      "name": "Pastor J.K Balogun",
+      "role": "Head Pastor",
+      "bio": "",
+      "image": "/images/img_dsc_5797.png"
     },
     {
       "id": 2,
-      "name": "Pastor Mary Johnson",
-      "role": "Associate Pastor",
-      "bio": "Pastor Mary leads our women''s ministry and counseling programs, bringing comfort and wisdom to many.",
-      "image": "/images/minister2.jpeg"
+      "name": "Pastor(Mrs) F.O Balogun",
+      "role": "Head Pastor",
+      "bio": "",
+      "image": "/images/img_dsc_9587.png"
     }
   ]',
   'CHURCH MINISTERS',
@@ -370,17 +373,136 @@ INSERT INTO about_us (
   '[
     {
       "id": 1,
-      "name": "Deacon Michael Williams",
-      "role": "Worship Leader",
-      "bio": "Michael has led our worship ministry for 5 years, creating an atmosphere of praise and devotion.",
-      "image": "/images/church-minister1.jpeg"
+      "name": "Pastor Bolanle Sowole",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9310.png"
     },
     {
       "id": 2,
-      "name": "Sister Rebecca Taylor",
-      "role": "Children''s Ministry Director",
-      "bio": "Rebecca brings creativity and Biblical knowledge to our children''s programs.",
-      "image": "/images/church-minister2.jpeg"
+      "name": "Sister Omolade Babalola",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9297.png"
+    },
+    {
+      "id": 3,
+      "name": "Bro Jide Akinsole",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9242.png"
+    },
+    {
+      "id": 4,
+      "name": "Dcn. Emmanuel Onakoya",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9206.png"
+    },
+    {
+      "id": 5,
+      "name": "Dcn. Goke Fadeyi",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9251.png"
+    },
+    {
+      "id": 6,
+      "name": "Dcn. Kolade Omodele",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9350.png"
+    },
+    {
+      "id": 7,
+      "name": "Pastor Gboyega Akanle",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9348.png"
+    },
+    {
+      "id": 8,
+      "name": "PST. Temitope Owoeye",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9341.png"
+    },
+    {
+      "id": 9,
+      "name": "Dcn Bamidele Ojo",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9322.png"
+    },
+    {
+      "id": 10,
+      "name": "Dcn. Adeola Tawede",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9284.png"
+    },
+    {
+      "id": 11,
+      "name": "Dcn. Abel Makanjuola",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9277.png"
+    },
+    {
+      "id": 12,
+      "name": "Dr Yemi Ilesanmi",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9268.png"
+    },
+    {
+      "id": 13,
+      "name": "Pastor Dare Sylvester",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9256.png"
+    },
+    {
+      "id": 14,
+      "name": "Dr. Ayo Oshinnowo",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9245.png"
+    },
+    {
+      "id": 15,
+      "name": "Bro Soji Toriola",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9408.png"
+    },
+    {
+      "id": 16,
+      "name": "Bro Mfon Obot",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9293.png"
+    },
+    {
+      "id": 17,
+      "name": "Pst. Feyisayo Owoeye",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/nhjsdkjd1.jpeg"
+    },
+    {
+      "id": 18,
+      "name": "Dcns Eniola Omodele",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/jsdnjbjhosdh.jpeg"
+    },
+    {
+      "id": 19,
+      "name": "Dcn Isaac Ademakinwa",
+      "role": "Minister",
+      "bio": "",
+      "image": "/images/osbhsabjhbasi.jpeg"
     }
   ]',
   'DEPARTMENT HEADS',
@@ -388,17 +510,52 @@ INSERT INTO about_us (
   '[
     {
       "id": 1,
-      "name": "Brother Daniel Clark",
-      "role": "Technical Department Head",
-      "bio": "Daniel oversees our audio-visual systems and online presence.",
-      "image": "/images/dept-head1.jpeg"
+      "name": "Oladipupo Baruwa",
+      "role": "HOD Protocol",
+      "bio": "",
+      "image": "/images/img_dsc_9396.png"
     },
     {
       "id": 2,
-      "name": "Sister Jennifer Adams",
-      "role": "Hospitality Department Head",
-      "bio": "Jennifer coordinates our welcoming team and ensures visitors feel at home.",
-      "image": "/images/dept-head2.jpeg"
+      "name": "Yetunde Ajanaku",
+      "role": "HOD Choir",
+      "bio": "",
+      "image": "/images/img_dsc_9388.png"
+    },
+    {
+      "id": 3,
+      "name": "Oloyede Amure",
+      "role": "HOD Soccer Team",
+      "bio": "",
+      "image": "/images/img_dsc_9374.png"
+    },
+    {
+      "id": 4,
+      "name": "Segun Oladeji",
+      "role": "HOD Publication",
+      "bio": "",
+      "image": "/images/img_dsc_9404.png"
+    },
+    {
+      "id": 5,
+      "name": "David Ayodele",
+      "role": "HOD Drama",
+      "bio": "",
+      "image": "/images/img_dsc_9420.png"
+    },
+    {
+      "id": 6,
+      "name": "Pastor(Mrs) F.O Balogun",
+      "role": "HOD Sanctuary",
+      "bio": "",
+      "image": "/images/img_dsc_9495.png"
+    },
+    {
+      "id": 7,
+      "name": "Bro Ademola Karonwi",
+      "role": "HOD Children''s Dept.",
+      "bio": "",
+      "image": "/images/img_dsc_9511.png"
     }
   ]',
   'OUR DEPARTMENTS',
@@ -406,21 +563,73 @@ INSERT INTO about_us (
   '[
     {
       "id": 1,
-      "name": "Worship Department",
-      "description": "Leads the congregation in praise and worship during services and events.",
-      "image": "/images/dept1.jpeg"
+      "name": "Choir",
+      "description": "Our Choir leads the congregation in heartfelt worship, creating an atmosphere where God''s presence is felt through spirit-filled songs and praise.",
+      "image": "/images/img_pexels_cottonbro_7520369.png",
+      "head": "Yetunde Ajanaku"
     },
     {
       "id": 2,
-      "name": "Children''s Department",
-      "description": "Provides age-appropriate spiritual education and activities for children.",
-      "image": "/images/dept2.jpeg"
+      "name": "Sunday School",
+      "description": "Sunday School is a time of deep biblical teaching, helping believers grow in faith, understanding, and practical Christian living.",
+      "image": "/images/img_dsc_9200.png",
+      "head": ""
     },
     {
       "id": 3,
-      "name": "Ushering Department",
-      "description": "Creates an orderly, welcoming atmosphere for all church services.",
-      "image": "/images/dept3.jpeg"
+      "name": "Welfare",
+      "description": "The Welfare Department extends God''s love through acts of kindness, providing support and care to those in need within the church and community.",
+      "image": "/images/img_dsc_9539.png",
+      "head": ""
+    },
+    {
+      "id": 4,
+      "name": "Ushering",
+      "description": "Our Ushers ensure a warm and welcoming worship experience by assisting with seating, orderliness, and ensuring a smooth flow during services.",
+      "image": "/images/img_pexels_kawerodr.png",
+      "head": ""
+    },
+    {
+      "id": 5,
+      "name": "Sound & Media",
+      "description": "The Sound & Media team enhances worship by managing audio, visuals, and live streaming, ensuring every message is delivered with clarity and excellence.",
+      "image": "/images/img_dsc_9519.png",
+      "head": "Segun Oladeji"
+    },
+    {
+      "id": 6,
+      "name": "Special Duties",
+      "description": "The Special Duties team provides essential support for church programs, coordinating logistics and ensuring smooth event execution.",
+      "image": "/images/img_dsc_9552.png",
+      "head": ""
+    },
+    {
+      "id": 7,
+      "name": "Children''s Ministry",
+      "description": "Our Children''s Ministry nurtures young hearts in the faith through age-appropriate teaching, fun activities, and spiritual development.",
+      "image": "/images/img_dsc_9435.png",
+      "head": "Bro Ademola Karonwi"
+    },
+    {
+      "id": 8,
+      "name": "Accounting",
+      "description": "The Accounting team ensures transparency and stewardship in managing church finances, handling tithes, offerings, and budgets with integrity.",
+      "image": "/images/img_dsc_9221.png",
+      "head": ""
+    },
+    {
+      "id": 9,
+      "name": "Transportation",
+      "description": "The Transportation team ensures that members and visitors can attend services and events with ease, providing reliable transport solutions.",
+      "image": "/images/img_dsc_9484.png",
+      "head": ""
+    },
+    {
+      "id": 10,
+      "name": "Sanctuary Keeper & Beautifiers",
+      "description": "This team maintains the cleanliness and beauty of God''s house, creating a welcoming and reverent environment for worship.",
+      "image": "/images/img_kevin_wright_4s_482x630.png",
+      "head": "Pastor(Mrs) F.O Balogun"
     }
   ]',
   'THE NEXT GEN MINISTRY',
@@ -431,21 +640,35 @@ INSERT INTO about_us (
   '[
     {
       "id": 1,
-      "name": "Brother James Wilson",
-      "role": "Youth Pastor",
-      "bio": "James has a heart for young people and helps them navigate faith in today''s world.",
-      "image": "/images/youth-minister1.jpeg"
+      "name": "Segun Oladeji",
+      "role": "Next Gen Minister",
+      "bio": "",
+      "image": "/images/img_dsc_9404.png"
     },
     {
       "id": 2,
-      "name": "Sister Sarah Brown",
-      "role": "Young Adults Coordinator",
-      "bio": "Sarah creates meaningful programs for college students and young professionals.",
-      "image": "/images/youth-minister2.jpeg"
+      "name": "Janet Oluwayomi",
+      "role": "",
+      "bio": "",
+      "image": "/images/WhatsApp Image 2025-03-06 at 19.50.11_050ee46d.png"
+    },
+    {
+      "id": 3,
+      "name": "Temitope Ann Aluko",
+      "role": "Next Gen Minister",
+      "bio": "",
+      "image": "/images/WhatsApp Image 2025-03-06 at 19.50.12_313e4a70.png"
+    },
+    {
+      "id": 4,
+      "name": "Susanah Amure",
+      "role": "",
+      "bio": "",
+      "image": "/images/WhatsApp Image 2025-03-06 at 19.50.12_6dc5a47c.png"
     }
   ]',
-  'WORSHIP WITH US',
-  'Join us for our weekly services and experience the presence of God.',
+  'Come worship\nwith us',
+  'Come worship with us every Sunday.\nWe promise you''ll be filled with the holy spirit.',
   '[
     {
       "id": 1,
@@ -471,7 +694,7 @@ INSERT INTO about_us (
     }
   ]',
   '5350 Allied Blvd, Indianapolis, IN',
-  '/images/sanctuary.jpeg'
+  '/images/img_verse.png'
 );
 ```
 

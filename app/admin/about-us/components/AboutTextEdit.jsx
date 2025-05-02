@@ -10,15 +10,14 @@ import {
 export default function AboutTextEdit() {
   const [sectionContent, setSectionContent] = useState({
     heading: "ABOUT OUR CHURCH",
-    content:
-      "RCCG Rod of God Parish is a vibrant, Spirit-filled church committed to building a community of believers passionate about God and dedicated to making a positive impact in Indianapolis and beyond. Our church is part of the Redeemed Christian Church of God global network and upholds its values and mission.\n\nOur services combine powerful worship, prayer, and Biblical teaching in a welcoming environment where everyone belongs. We believe in nurturing spiritual growth at every age and life stage.",
+    content: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch section data
+  // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
@@ -46,9 +45,9 @@ export default function AboutTextEdit() {
       setIsSaving(true);
       await updateAboutTextSection(sectionContent);
       setIsEditing(false);
-      toast.success("About text updated successfully");
+      toast.success("About Text section updated successfully");
     } catch (error) {
-      console.error("Error updating About Text section:", error);
+      console.error("Error saving About Text section:", error);
       toast.error("Failed to update section");
     } finally {
       setIsSaving(false);

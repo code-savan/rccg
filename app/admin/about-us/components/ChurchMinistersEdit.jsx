@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-// import { toast } from "react-hot-toast";
-// import {
-//   fetchChurchMinistersSection,
-//   updateChurchMinistersSection,
-// } from "@/lib/services/aboutUsService";
+import { toast } from "react-hot-toast";
+import {
+  fetchChurchMinistersSection,
+  updateChurchMinistersSection,
+} from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function ChurchMinistersEdit() {
@@ -14,146 +14,31 @@ export default function ChurchMinistersEdit() {
     heading: "CHURCH MINISTERS",
     description:
       "Our church ministers lead various ministries and serve our congregation in specialized areas.",
-    churchMinisters: [
-      {
-        id: 1,
-        name: "Pastor Bolanle Sowole",
-        role: "Minister",
-        image: "/images/img_dsc_9310.png",
-      },
-      {
-        id: 2,
-        name: "Sister Omolade Babalola",
-        role: "Minister",
-        image: "/images/img_dsc_9297.png",
-      },
-      {
-        id: 3,
-        name: "Bro Jide Akinsole",
-        role: "Minister",
-        image: "/images/img_dsc_9242.png",
-      },
-      {
-        id: 4,
-        name: "Dcn. Emmanuel Onakoya",
-        role: "Minister",
-        image: "/images/img_dsc_9206.png",
-      },
-      {
-        id: 5,
-        name: "Dcn. Goke Fadeyi",
-        role: "Minister",
-        image: "/images/img_dsc_9251.png",
-      },
-      {
-        id: 6,
-        name: "Dcn. Kolade Omodele",
-        role: "Minister",
-        image: "/images/img_dsc_9350.png",
-      },
-      {
-        id: 7,
-        name: "Pastor Gboyega Akanle",
-        role: "Minister",
-        image: "/images/img_dsc_9348.png",
-      },
-      {
-        id: 8,
-        name: "PST. Temitope Owoeye",
-        role: "Minister",
-        image: "/images/img_dsc_9341.png",
-      },
-      {
-        id: 9,
-        name: "Dcn Bamidele Ojo",
-        role: "Minister",
-        image: "/images/img_dsc_9322.png",
-      },
-      {
-        id: 10,
-        name: "Dcn. Adeola Tawede",
-        role: "Minister",
-        image: "/images/img_dsc_9284.png",
-      },
-      {
-        id: 11,
-        name: "Dcn. Abel Makanjuola",
-        role: "Minister",
-        image: "/images/img_dsc_9277.png",
-      },
-      {
-        id: 12,
-        name: "Dr Yemi Ilesanmi",
-        role: "Minister",
-        image: "/images/img_dsc_9268.png",
-      },
-      {
-        id: 13,
-        name: "Pastor Dare Sylvester",
-        role: "Minister",
-        image: "/images/img_dsc_9256.png",
-      },
-      {
-        id: 14,
-        name: "Dr. Ayo Oshinnowo",
-        role: "Minister",
-        image: "/images/img_dsc_9245.png",
-      },
-      {
-        id: 15,
-        name: "Bro Soji Toriola",
-        role: "Minister",
-        image: "/images/img_dsc_9408.png",
-      },
-      {
-        id: 16,
-        name: "Bro Mfon Obot",
-        role: "Minister",
-        image: "/images/img_dsc_9293.png",
-      },
-      {
-        id: 17,
-        name: "Pst. Feyisayo Owoeye",
-        role: "Minister",
-        image: "/images/nhjsdkjd1.jpeg",
-      },
-      {
-        id: 18,
-        name: "Dcns Eniola Omodele",
-        role: "Minister",
-        image: "/images/jsdnjbjhosdh.jpeg",
-      },
-      {
-        id: 19,
-        name: "Dcn Isaac Ademakinwa",
-        role: "Minister",
-        image: "/images/osbhsabjhbasi.jpeg",
-      },
-    ],
+    churchMinisters: [],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingMinisterId, setEditingMinisterId] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Comment out API fetch
-  // useEffect(() => {
-  //   async function fetchSectionData() {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await fetchChurchMinistersSection();
-  //       setSectionContent(data);
-  //     } catch (error) {
-  //       console.error("Error fetching Church Ministers section data:", error);
-  //       toast.error("Failed to load Church Ministers section data");
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
+  // Fetch section data from the database
+  useEffect(() => {
+    async function fetchSectionData() {
+      try {
+        setIsLoading(true);
+        const data = await fetchChurchMinistersSection();
+        setSectionContent(data);
+      } catch (error) {
+        console.error("Error fetching Church Ministers section data:", error);
+        toast.error("Failed to load Church Ministers section data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  //   fetchSectionData();
-  // }, []);
+    fetchSectionData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -210,42 +95,31 @@ export default function ChurchMinistersEdit() {
     setEditingMinisterId(null);
   };
 
-  const handleSave = () => {
-    // Comment out API save
-    setIsSaving(true);
-    // try to simulate saving
-    setTimeout(() => {
-      console.log("Saved section content:", sectionContent);
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateChurchMinistersSection(sectionContent);
       setIsEditing(false);
       setEditingMinisterId(null);
+      toast.success("Church Ministers section updated successfully");
+    } catch (error) {
+      console.error("Error saving Church Ministers section:", error);
+      toast.error("Failed to update Church Ministers section");
+    } finally {
       setIsSaving(false);
-      alert("Church Ministers section saved successfully");
-    }, 1000);
-
-    // try {
-    //   setIsSaving(true);
-    //   await updateChurchMinistersSection(sectionContent);
-    //   setIsEditing(false);
-    //   setEditingMinisterId(null);
-    //   toast.success("Church Ministers section updated successfully");
-    // } catch (error) {
-    //   console.error("Error saving Church Ministers section:", error);
-    //   toast.error("Failed to update Church Ministers section");
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
-  //       <div className="animate-pulse">
-  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-  //         <div className="h-40 bg-gray-200 rounded"></div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">

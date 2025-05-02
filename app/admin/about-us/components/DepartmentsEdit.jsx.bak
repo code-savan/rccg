@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
+// import { toast } from "react-hot-toast";
 import {
   PlusCircleIcon,
   PencilSquareIcon,
@@ -10,10 +10,10 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-import {
-  fetchDepartmentsSection,
-  updateDepartmentsSection,
-} from "@/lib/services/aboutUsService";
+// import {
+//   fetchDepartmentsSection,
+//   updateDepartmentsSection,
+// } from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function DepartmentsEdit() {
@@ -21,7 +21,88 @@ export default function DepartmentsEdit() {
     heading: "OUR DEPARTMENTS",
     description:
       "At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There's a place for everyone to serve, grow, and make an impact!",
-    departments: [],
+    departments: [
+      {
+        id: 1,
+        name: "Choir",
+        description:
+          "Our Choir leads the congregation in heartfelt worship, creating an atmosphere where God's presence is felt through spirit-filled songs and praise.",
+        image: "/images/img_pexels_cottonbro_7520369.png",
+        head: "Yetunde Ajanaku",
+      },
+      {
+        id: 2,
+        name: "Sunday School",
+        description:
+          "Sunday School is a time of deep biblical teaching, helping believers grow in faith, understanding, and practical Christian living.",
+        image: "/images/img_dsc_9200.png",
+        head: "",
+      },
+      {
+        id: 3,
+        name: "Welfare",
+        description:
+          "The Welfare Department extends God's love through acts of kindness, providing support and care to those in need within the church and community.",
+        image: "/images/img_dsc_9539.png",
+        head: "",
+      },
+      {
+        id: 4,
+        name: "Ushering",
+        description:
+          "Our Ushers ensure a warm and welcoming worship experience by assisting with seating, orderliness, and ensuring a smooth flow during services.",
+        image: "/images/img_pexels_kawerodr.png",
+        head: "",
+      },
+      {
+        id: 5,
+        name: "Sound & Media",
+        description:
+          "The Sound & Media team enhances worship by managing audio, visuals, and live streaming, ensuring every message is delivered with clarity and excellence.",
+        image: "/images/img_dsc_9519.png",
+        head: "Segun Oladeji",
+      },
+      {
+        id: 6,
+        name: "Special Duties",
+        description:
+          "The Special Duties team provides essential support for church programs, coordinating logistics and ensuring smooth event execution.",
+        image: "/images/img_dsc_9552.png",
+        head: "",
+      },
+      {
+        id: 7,
+        name: "Children's Ministry",
+        description:
+          "Our Children's Ministry nurtures young hearts in the faith through age-appropriate teaching, fun activities, and spiritual development.",
+        image: "/images/img_dsc_9435.png",
+        head: "Bro Ademola Karonwi",
+      },
+      {
+        id: 8,
+        name: "Accounting",
+        description:
+          "The Accounting team ensures transparency and stewardship in managing church finances, handling tithes, offerings, and budgets with integrity.",
+        image: "/images/img_dsc_9221.png",
+        head: "",
+      },
+      {
+        id: 9,
+        name: "Transportation",
+        description:
+          "The Transportation team ensures that members and visitors can attend services and events with ease, providing reliable transport solutions.",
+        image: "/images/img_dsc_9484.png",
+        head: "",
+      },
+      {
+        id: 10,
+        name: "Sanctuary Keeper & Beautifiers",
+        description:
+          "This team maintains the cleanliness and beauty of God's house, creating a welcoming and reverent environment for worship.",
+        image: "/images/img_kevin_wright_4s_482x630.png",
+        head: "Pastor(Mrs) F.O Balogun",
+      },
+    ],
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -32,26 +113,26 @@ export default function DepartmentsEdit() {
     image: "",
     head: "",
   });
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch data from API
-  useEffect(() => {
-    async function fetchSectionData() {
-      try {
-        setIsLoading(true);
-        const data = await fetchDepartmentsSection();
-        setSectionContent(data);
-      } catch (error) {
-        console.error("Error fetching Departments section data:", error);
-        toast.error("Failed to load section data");
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  // Comment out API fetch
+  // useEffect(() => {
+  //   async function fetchSectionData() {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await fetchDepartmentsSection();
+  //       setSectionContent(data);
+  //     } catch (error) {
+  //       console.error("Error fetching Departments section data:", error);
+  //       toast.error("Failed to load section data");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
 
-    fetchSectionData();
-  }, []);
+  //   fetchSectionData();
+  // }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -147,29 +228,40 @@ export default function DepartmentsEdit() {
     setIsEditing(false);
   };
 
-  const handleSaveAll = async () => {
-    try {
-      setIsSaving(true);
-      await updateDepartmentsSection(sectionContent);
-      toast.success("Departments section updated successfully");
-    } catch (error) {
-      console.error("Error saving Departments section:", error);
-      toast.error("Failed to update Departments section");
-    } finally {
+  const handleSaveAll = () => {
+    // Comment out API save
+    setIsSaving(true);
+    // try to simulate saving
+    setTimeout(() => {
+      console.log("Saving departments data:", sectionContent);
       setIsSaving(false);
-    }
+      // toast.success("Departments section saved successfully");
+      alert("Departments section saved successfully");
+    }, 1000);
+
+    // try {
+    //   setIsSaving(true);
+    //   await updateDepartmentsSection(sectionContent);
+    //   toast.success("Departments section updated successfully");
+    //   setIsEditing(false);
+    // } catch (error) {
+    //   console.error("Error saving Departments section:", error);
+    //   toast.error("Failed to update section");
+    // } finally {
+    //   setIsSaving(false);
+    // }
   };
 
-  if (isLoading) {
-    return (
-      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-40 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+  //       <div className="animate-pulse">
+  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+  //         <div className="h-40 bg-gray-200 rounded"></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">

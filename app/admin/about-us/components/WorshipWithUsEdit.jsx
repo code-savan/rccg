@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-// import { toast } from "react-hot-toast";
-// import {
-//   fetchWorshipWithUsSection,
-//   updateWorshipWithUsSection,
-// } from "@/lib/services/aboutUsService";
+import { toast } from "react-hot-toast";
+import {
+  fetchWorshipWithUsSection,
+  updateWorshipWithUsSection,
+} from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function WorshipWithUsEdit() {
@@ -14,18 +14,7 @@ export default function WorshipWithUsEdit() {
     heading: "Come worship\nwith us",
     description:
       "Come worship with us every Sunday.\nWe promise you'll be filled with the holy spirit.",
-    buttons: [
-      {
-        id: 1,
-        text: "RCCG Live",
-        link: "https://www.youtube.com/@RCCGRodofGodParish",
-      },
-      {
-        id: 2,
-        text: "Next Gen Live",
-        link: "https://www.youtube.com/@RCCGRodofGodParish",
-      },
-    ],
+    buttons: [],
     bibleVerse:
       "For where two or three gather in my name, there am I with them.",
     bibleReference: "Matthew 18:20",
@@ -34,26 +23,26 @@ export default function WorshipWithUsEdit() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingButtonId, setEditingButtonId] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Comment out API fetch
-  // useEffect(() => {
-  //   async function fetchSectionData() {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await fetchWorshipWithUsSection();
-  //       setSectionContent(data);
-  //     } catch (error) {
-  //       console.error("Error fetching Worship With Us section data:", error);
-  //       toast.error("Failed to load section data");
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
+  // Fetch data from API
+  useEffect(() => {
+    async function fetchSectionData() {
+      try {
+        setIsLoading(true);
+        const data = await fetchWorshipWithUsSection();
+        setSectionContent(data);
+      } catch (error) {
+        console.error("Error fetching Worship With Us section data:", error);
+        toast.error("Failed to load section data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  //   fetchSectionData();
-  // }, []);
+    fetchSectionData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,42 +84,31 @@ export default function WorshipWithUsEdit() {
     setEditingButtonId(null);
   };
 
-  const handleSave = () => {
-    // Comment out API save
-    setIsSaving(true);
-    // try to simulate saving
-    setTimeout(() => {
-      console.log("Saved section content:", sectionContent);
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateWorshipWithUsSection(sectionContent);
       setIsEditing(false);
       setEditingButtonId(null);
+      toast.success("Worship With Us section updated successfully");
+    } catch (error) {
+      console.error("Error saving Worship With Us section:", error);
+      toast.error("Failed to update section");
+    } finally {
       setIsSaving(false);
-      alert("Worship With Us section saved successfully");
-    }, 1000);
-
-    // try {
-    //   setIsSaving(true);
-    //   await updateWorshipWithUsSection(sectionContent);
-    //   setIsEditing(false);
-    //   setEditingButtonId(null);
-    //   toast.success("Worship With Us section updated successfully");
-    // } catch (error) {
-    //   console.error("Error saving Worship With Us section:", error);
-    //   toast.error("Failed to update section");
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
-  //       <div className="animate-pulse">
-  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-  //         <div className="h-40 bg-gray-200 rounded"></div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
