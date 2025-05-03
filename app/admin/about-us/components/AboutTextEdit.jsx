@@ -6,26 +6,30 @@ import {
   fetchAboutTextSection,
   updateAboutTextSection,
 } from "@/lib/services/aboutUsService";
+import { formatDisplayText } from "@/lib/aboutUsFormData";
 
 export default function AboutTextEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "ABOUT OUR CHURCH",
+    heading: "",
     content: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchAboutTextSection();
         setSectionContent(data);
       } catch (error) {
         console.error("Error fetching About Text section data:", error);
+        setError("Failed to load section data. Please try again later.");
         toast.error("Failed to load section data");
       } finally {
         setIsLoading(false);
@@ -48,6 +52,7 @@ export default function AboutTextEdit() {
       toast.success("About Text section updated successfully");
     } catch (error) {
       console.error("Error saving About Text section:", error);
+      setError("Failed to update section. Please try again later.");
       toast.error("Failed to update section");
     } finally {
       setIsSaving(false);
@@ -61,6 +66,14 @@ export default function AboutTextEdit() {
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-40 bg-gray-200 rounded"></div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <p className="text-red-500">{error}</p>
       </div>
     );
   }
@@ -86,7 +99,7 @@ export default function AboutTextEdit() {
             </h2>
             <div className="bg-gray-50 p-8 rounded-lg border border-gray-200">
               <p className="whitespace-pre-line text-lg leading-relaxed text-gray-700">
-                {sectionContent.content}
+                {formatDisplayText(sectionContent.content)}
               </p>
             </div>
           </div>

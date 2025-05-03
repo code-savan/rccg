@@ -5,7 +5,7 @@ export default function AboutUsSection() {
   return (
     <>
       {/* about us section */}
-      <div className="flex h-[670px] items-start justify-center bg-[url(/images/img_group_227.png)] bg-cover bg-no-repeat py-[168px] md:h-auto md:py-16 sm:py-12">
+      <div className="flex h-[670px] items-start justify-center bg-[url(/images/aboutushero.png)] bg-cover bg-no-repeat py-[168px] md:h-auto md:py-16 sm:py-12">
         <div className="container-xs mb-[148px] flex justify-center md:mb-16 sm:mb-10 md:px-5">
           <div className="flex w-full flex-col items-start gap-5 lg:px-24 md:px-12 sm:px-5">
             <Heading

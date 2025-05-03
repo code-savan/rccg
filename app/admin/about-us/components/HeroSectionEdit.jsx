@@ -7,6 +7,7 @@ import {
   updateHeroSection,
 } from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
+import { formatDisplayText } from "@/lib/aboutUsFormData";
 
 export default function HeroSectionEdit() {
   const [heroData, setHeroData] = useState({
@@ -93,10 +94,12 @@ export default function HeroSectionEdit() {
               }}
             >
               <div className="text-white">
-                <h2 className="text-3xl font-medium mb-4">
-                  {heroData.heading}
+                <h2 className="text-3xl font-medium mb-4 whitespace-pre-line">
+                  {formatDisplayText(heroData.heading)}
                 </h2>
-                <p className="text-xl">{heroData.subheading}</p>
+                <p className="text-xl whitespace-pre-line">
+                  {formatDisplayText(heroData.subheading)}
+                </p>
               </div>
             </div>
           </div>
@@ -132,15 +135,12 @@ export default function HeroSectionEdit() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Background Image URL
+                Background Image
               </label>
-              <input
-                type="text"
-                name="backgroundImage"
-                value={heroData.backgroundImage}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="/images/your-image.jpg"
+              <ImageUpload
+                section="about-us-hero"
+                onImageUploaded={handleImageChange}
+                existingImageUrl={heroData.backgroundImage}
               />
             </div>
           </div>

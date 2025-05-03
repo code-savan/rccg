@@ -8,33 +8,39 @@ import {
   updateWorshipWithUsSection,
 } from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
+import { formatDisplayText } from "@/lib/aboutUsFormData";
 
 export default function WorshipWithUsEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "Come worship\nwith us",
-    description:
-      "Come worship with us every Sunday.\nWe promise you'll be filled with the holy spirit.",
+    heading: "",
+    description: "",
     buttons: [],
-    bibleVerse:
-      "For where two or three gather in my name, there am I with them.",
-    bibleReference: "Matthew 18:20",
-    image: "/images/img_verse.png",
+    bibleVerse: "For where two or three gather in my name, there am I with them.",
+    bibleReference: "Matthew 18:20 (NIV)",
+    image: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingButtonId, setEditingButtonId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchWorshipWithUsSection();
-        setSectionContent(data);
+        // Ensure buttons is always an array
+        setSectionContent({
+          ...data,
+          buttons: Array.isArray(data.buttons) ? data.buttons : []
+        });
       } catch (error) {
         console.error("Error fetching Worship With Us section data:", error);
+        setError("Failed to load section data. Please try again later.");
         toast.error("Failed to load section data");
       } finally {
         setIsLoading(false);
@@ -53,7 +59,7 @@ export default function WorshipWithUsEdit() {
     const { name, value } = e.target;
     setSectionContent((prev) => ({
       ...prev,
-      buttons: prev.buttons.map((button) =>
+      buttons: (prev.buttons || []).map((button) =>
         button.id === id ? { ...button, [name]: value } : button
       ),
     }));
@@ -61,27 +67,6 @@ export default function WorshipWithUsEdit() {
 
   const handleImageChange = (imageUrl) => {
     setSectionContent((prev) => ({ ...prev, image: imageUrl }));
-  };
-
-  const handleAddButton = () => {
-    const newButton = {
-      id: Math.max(0, ...sectionContent.buttons.map((b) => b.id)) + 1,
-      text: "",
-      link: "",
-    };
-    setSectionContent((prev) => ({
-      ...prev,
-      buttons: [...prev.buttons, newButton],
-    }));
-    setEditingButtonId(newButton.id);
-  };
-
-  const handleDeleteButton = (id) => {
-    setSectionContent((prev) => ({
-      ...prev,
-      buttons: prev.buttons.filter((button) => button.id !== id),
-    }));
-    setEditingButtonId(null);
   };
 
   const handleSave = async () => {
@@ -93,6 +78,7 @@ export default function WorshipWithUsEdit() {
       toast.success("Worship With Us section updated successfully");
     } catch (error) {
       console.error("Error saving Worship With Us section:", error);
+      setError("Failed to update section. Please try again later.");
       toast.error("Failed to update section");
     } finally {
       setIsSaving(false);
@@ -109,6 +95,25 @@ export default function WorshipWithUsEdit() {
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="text-red-500 text-center">
+          <p>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Ensure buttons is always an array
+  const buttons = sectionContent.buttons || [];
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -128,47 +133,45 @@ export default function WorshipWithUsEdit() {
 
       {!isEditing ? (
         <div className="p-8 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="container-xs flex items-center justify-center md:flex-col md:gap-10">
-              <div className="flex w-[42%] flex-col items-center gap-[30px] md:w-full">
-                <p className="mx-auto text-center text-[40px] w-full font-normal leading-[110%] text-charcoal whitespace-pre-line">
-                  {sectionContent.heading}
-                </p>
-                <p className="text-center text-[16px] font-normal leading-[130%] text-gray-600 whitespace-pre-line">
-                  {sectionContent.description}
-                </p>
-                <div className="flex flex-col gap-4">
-                  {sectionContent.buttons.map((button) => (
-                    <a
-                      key={button.id}
-                      href={button.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] py-2 text-center hover:bg-[#4D88FF] hover:text-white hover:border-[#4D88FF] transition-colors"
-                    >
-                      {button.text}
-                    </a>
-                  ))}
-                </div>
+          <div className="container-xs flex items-center justify-center md:flex-col md:gap-10">
+            <div className="flex w-[42%] flex-col items-center gap-[30px] md:w-full">
+              <p className="mx-auto text-center text-[40px] w-full font-normal leading-[110%] text-charcoal md:ml-0 lg:text-[36px] md:text-[32px] sm:text-[28px]">
+                <span dangerouslySetInnerHTML={{ __html: formatDisplayText(sectionContent.heading) }}></span>
+              </p>
+              <p className="text-center text-[16px] sm:text-[14px] font-normal leading-[130%] text-gray-600">
+                <span dangerouslySetInnerHTML={{ __html: formatDisplayText(sectionContent.description) }}></span>
+              </p>
+              <div className="flex flex-col gap-4">
+                {buttons.map((button) => (
+                  <a
+                    key={button.id}
+                    href={button.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] py-2 sm:px-5 hover:bg-[#4D88FF] hover:text-white hover:border-[#4D88FF] transition-colors text-center"
+                  >
+                    {button.text}
+                  </a>
+                ))}
               </div>
-              <div
-                className="flex h-[630px] flex-1 items-start justify-center rounded-[20px] bg-cover bg-no-repeat px-14 py-[194px] md:h-auto md:w-full md:py-16"
-                style={{
-                  backgroundImage: `url(${sectionContent.image})`,
-                }}
-              >
-                <div className="mb-3 flex  justify-center rounded-[20px] border border-solid border-gray-400 bg-gray-100 bg-opacity-10 backdrop-blur-sm px-[38px] py-[66px] md:w-full md:px-6 md:py-10">
-                  <p className="text-[20px] font-normal leading-[130%] text-black">
-                    <span className="italic">
-                      "{sectionContent.bibleVerse}"
-                    </span>
-                    <br />
-                    <br />
-                    <span className="font-medium text-right block">
-                      - {sectionContent.bibleReference}
-                    </span>
-                  </p>
-                </div>
+            </div>
+            <div 
+              className="flex h-[630px] flex-1 items-start justify-center rounded-[20px] bg-cover bg-no-repeat px-14 py-[194px] md:h-auto md:w-full md:py-16 sm:py-12 sm:px-5"
+              style={{
+                backgroundImage: `url(${sectionContent.image || "/images/img_verse.png"})`,
+              }}
+            >
+              <div className="mb-3 flex w-[66%] justify-center rounded-[20px] border border-solid border-gray-400 bg-gray-100 bg-opacity-10 backdrop-blur-sm px-[38px] py-[66px] md:w-full md:px-6 md:py-10 sm:py-8 sm:px-5">
+                <p className="text-[20px] font-normal leading-[130%] text-charcoal lg:text-[18px] md:text-[16px] sm:text-[15px]">
+                  <span className="italic text-gray-600">
+                    "{sectionContent.bibleVerse}"
+                  </span>
+                  <br />
+                  <br />
+                  <span className="font-medium text-right block">
+                    - {sectionContent.bibleReference}
+                  </span>
+                </p>
               </div>
             </div>
           </div>
@@ -245,7 +248,7 @@ export default function WorshipWithUsEdit() {
                   <ImageUpload
                     existingImageUrl={sectionContent.image}
                     onImageUploaded={handleImageChange}
-                    section="about-us/worship-with-us"
+                    section="about-us-worship"
                     disabled={isSaving}
                   />
                 </div>
@@ -254,17 +257,11 @@ export default function WorshipWithUsEdit() {
               <div className="border-t border-gray-200 pt-6">
                 <div className="flex justify-between items-center mb-4">
                   <h4 className="font-medium text-gray-900">Buttons</h4>
-                  <button
-                    onClick={handleAddButton}
-                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    disabled={isSaving}
-                  >
-                    Add Button
-                  </button>
+                  {/* Removed Add Button functionality as requested */}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {sectionContent.buttons.map((button) => (
+                  {(buttons || []).map((button) => (
                     <div
                       key={button.id}
                       className="border border-gray-200 rounded-lg p-4"
@@ -280,13 +277,7 @@ export default function WorshipWithUsEdit() {
                             >
                               Edit
                             </button>
-                            <button
-                              onClick={() => handleDeleteButton(button.id)}
-                              className="px-3 py-1.5 text-sm border border-red-200 text-red-600 rounded-md hover:bg-red-50"
-                              disabled={isSaving}
-                            >
-                              Delete
-                            </button>
+                            {/* Removed Delete Button functionality as requested */}
                           </div>
                         </div>
                         <a
@@ -317,10 +308,10 @@ export default function WorshipWithUsEdit() {
             <div className="max-w-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h4 className="font-medium text-gray-900">
-                  {sectionContent.buttons.find((b) => b.id === editingButtonId)
+                  {(sectionContent.buttons || []).find((b) => b.id === editingButtonId)
                     ?.text
                     ? `Edit Button: ${
-                        sectionContent.buttons.find(
+                        (sectionContent.buttons || []).find(
                           (b) => b.id === editingButtonId
                         ).text
                       }`
@@ -344,7 +335,7 @@ export default function WorshipWithUsEdit() {
                     type="text"
                     name="text"
                     value={
-                      sectionContent.buttons.find(
+                      (sectionContent.buttons || []).find(
                         (b) => b.id === editingButtonId
                       )?.text || ""
                     }
@@ -363,7 +354,7 @@ export default function WorshipWithUsEdit() {
                     type="text"
                     name="link"
                     value={
-                      sectionContent.buttons.find(
+                      (sectionContent.buttons || []).find(
                         (b) => b.id === editingButtonId
                       )?.link || ""
                     }

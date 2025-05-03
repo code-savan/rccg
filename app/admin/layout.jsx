@@ -10,7 +10,7 @@ export default function AdminLayout({ children }) {
   const [fadeState, setFadeState] = useState("fade-in");
 
   const adminTips = [
-    "Some components appear on multiple pages. Updates to one will reflect everywhere.",
+    "Some components appear on multiple pages. Updates to one will not reflect everywhere.",
     "Each page is organized into sections. Use the tabs to navigate between them.",
     "Changes are automatically saved when you submit an edit.",
     "Preview your changes anytime using the 'View Live Page' button.",

@@ -11,26 +11,28 @@ import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function NextGenMinistersEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "NEXTGEN MINISTERS",
-    description:
-      "Our youth leaders guide and mentor the next generation of believers.",
-    ministers: [],
+    heading: "",
+    description: "",
+    nextGenMinisters: [],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingMinisterId, setEditingMinisterId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchNextGenMinistersSection();
         setSectionContent(data);
       } catch (error) {
         console.error("Error fetching NextGen Ministers section data:", error);
+        setError("Failed to load section data. Please try again later.");
         toast.error("Failed to load section data");
       } finally {
         setIsLoading(false);
@@ -49,7 +51,7 @@ export default function NextGenMinistersEdit() {
     const { name, value } = e.target;
     setSectionContent((prev) => ({
       ...prev,
-      ministers: prev.ministers.map((minister) =>
+      nextGenMinisters: prev.nextGenMinisters.map((minister) =>
         minister.id === id ? { ...minister, [name]: value } : minister
       ),
     }));
@@ -58,7 +60,7 @@ export default function NextGenMinistersEdit() {
   const handleImageChange = (id, imageUrl) => {
     setSectionContent((prev) => ({
       ...prev,
-      ministers: prev.ministers.map((minister) =>
+      nextGenMinisters: prev.nextGenMinisters.map((minister) =>
         minister.id === id ? { ...minister, image: imageUrl } : minister
       ),
     }));
@@ -66,14 +68,14 @@ export default function NextGenMinistersEdit() {
 
   const handleAddMinister = () => {
     const newMinister = {
-      id: Math.max(0, ...sectionContent.ministers.map((m) => m.id)) + 1,
+      id: Math.max(0, ...(sectionContent.nextGenMinisters?.map((m) => m.id) || [0])) + 1,
       name: "",
       role: "",
       image: "",
     };
     setSectionContent((prev) => ({
       ...prev,
-      ministers: [...prev.ministers, newMinister],
+      nextGenMinisters: [...(prev.nextGenMinisters || []), newMinister],
     }));
     setEditingMinisterId(newMinister.id);
   };
@@ -81,7 +83,7 @@ export default function NextGenMinistersEdit() {
   const handleDeleteMinister = (id) => {
     setSectionContent((prev) => ({
       ...prev,
-      ministers: prev.ministers.filter((minister) => minister.id !== id),
+      nextGenMinisters: prev.nextGenMinisters.filter((minister) => minister.id !== id),
     }));
     setEditingMinisterId(null);
   };
@@ -112,6 +114,25 @@ export default function NextGenMinistersEdit() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="text-red-500 text-center">
+          <p>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Ensure nextGenMinisters is always an array
+  const ministers = sectionContent.nextGenMinisters || [];
+
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
       <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
@@ -138,7 +159,7 @@ export default function NextGenMinistersEdit() {
               {sectionContent.description}
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {sectionContent.ministers.map((minister) => (
+              {ministers.map((minister) => (
                 <div
                   key={minister.id}
                   className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200"
@@ -213,7 +234,7 @@ export default function NextGenMinistersEdit() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sectionContent.ministers.map((minister) => (
+                  {ministers.map((minister) => (
                     <div
                       key={minister.id}
                       className="border border-gray-200 rounded-lg p-4"
@@ -272,11 +293,11 @@ export default function NextGenMinistersEdit() {
             <div className="max-w-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h4 className="font-medium text-gray-900">
-                  {sectionContent.ministers.find(
+                  {ministers.find(
                     (m) => m.id === editingMinisterId
                   )?.name
                     ? `Edit Minister: ${
-                        sectionContent.ministers.find(
+                        ministers.find(
                           (m) => m.id === editingMinisterId
                         ).name
                       }`
@@ -300,7 +321,7 @@ export default function NextGenMinistersEdit() {
                     type="text"
                     name="name"
                     value={
-                      sectionContent.ministers.find(
+                      ministers.find(
                         (m) => m.id === editingMinisterId
                       )?.name || ""
                     }
@@ -319,7 +340,7 @@ export default function NextGenMinistersEdit() {
                     type="text"
                     name="role"
                     value={
-                      sectionContent.ministers.find(
+                      ministers.find(
                         (m) => m.id === editingMinisterId
                       )?.role || ""
                     }
@@ -335,15 +356,15 @@ export default function NextGenMinistersEdit() {
                     Minister Image
                   </label>
                   <ImageUpload
+                    onImageUploaded={(url) => handleImageChange(editingMinisterId, url)}
+                    section="about-us-nextgen-ministers"
+                    bucketName="about-us-files"
                     existingImageUrl={
-                      sectionContent.ministers.find(
+                      ministers.find(
                         (m) => m.id === editingMinisterId
                       )?.image || ""
                     }
-                    onImageUploaded={(imageUrl) =>
-                      handleImageChange(editingMinisterId, imageUrl)
-                    }
-                    section="about-us/nextgen-ministers"
+                    buttonText="Upload NextGen Minister Image"
                     disabled={isSaving}
                   />
                 </div>

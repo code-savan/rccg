@@ -4,7 +4,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import {
-  defaultAboutUsData,
   mapDBToDepartmentsSection,
 } from "@/lib/aboutUsFormData";
 
@@ -19,11 +18,12 @@ export async function GET() {
       .limit(1)
       .single();
 
-    // If no data is found, initialize with default data
-    if (error || !data) {
-      // Return default data if record doesn't exist yet
-      const defaultSectionData = mapDBToDepartmentsSection(defaultAboutUsData);
-      return NextResponse.json(defaultSectionData);
+    if (error) {
+      console.error("Error fetching departments section data:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch departments section data" },
+        { status: 500 }
+      );
     }
 
     // Map to component format
@@ -50,7 +50,7 @@ export async function PUT(request) {
       .limit(1)
       .maybeSingle();
 
-    if (checkError && checkError.code !== "PGRST116") {
+    if (checkError) {
       console.error("Error checking for existing about-us data:", checkError);
       return NextResponse.json(
         { error: "Failed to update departments section data" },
@@ -86,27 +86,11 @@ export async function PUT(request) {
 
       response = mapDBToDepartmentsSection(updatedData);
     } else {
-      // Insert new record with default values for other fields
-      const insertData = {
-        ...defaultAboutUsData,
-        ...updateData,
-      };
-
-      const { data: insertedData, error: insertError } = await supabase
-        .from("about_us")
-        .insert([insertData])
-        .select("departments_heading, departments_description, departments")
-        .single();
-
-      if (insertError) {
-        console.error("Error inserting departments section data:", insertError);
-        return NextResponse.json(
-          { error: "Failed to create departments section data" },
-          { status: 500 }
-        );
-      }
-
-      response = mapDBToDepartmentsSection(insertedData);
+      // If no record exists, return an error
+      return NextResponse.json(
+        { error: "No about_us record found to update" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(response);

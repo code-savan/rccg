@@ -1,40 +1,47 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { toast } from "react-hot-toast";
+import { fetchWelcomeHeroSection, updateWelcomeHeroSection } from "@/lib/services/homeService";
+import { formatDisplayText } from "@/lib/homeFormData";
+import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function WelcomeHeroEdit() {
-  // Initial state based on current content
+  // Initial state
   const [heroContent, setHeroContent] = useState({
-    welcomeTitle: "Welcome to the\nRedeemed Christian\nChurch of God.",
-    subtitle: "Rod Of God Parish, Indianapolis Indiana USA.",
-    buttonText: "Learn more",
-    bibleVerses: [
-      {
-        id: 1,
-        verse:
-          "From him the whole body, joined and held together by every supporting ligament, grows and builds itself up in love, as each part does its work",
-        reference: "Ephesians 4:16 (NIV)",
-      },
-      {
-        id: 2,
-        verse:
-          "For where two or three gather in my name, there am I with them.",
-        reference: "Matthew 18:20 (NIV)",
-      },
-      {
-        id: 3,
-        verse:
-          "Let us not give up meeting together, as some are in the habit of doing, but let us encourage one another.",
-        reference: "Hebrews 10:25 (NIV)",
-      },
-    ],
-    backgroundImage: "/images/img_group_5.png",
+    welcomeTitle: "",
+    subtitle: "",
+    buttonText: "",
+    bibleVerses: [],
+    backgroundImage: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [editingVerseId, setEditingVerseId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await fetchWelcomeHeroSection();
+        setHeroContent(data);
+      } catch (error) {
+        console.error("Error fetching welcome hero data:", error);
+        setError("Failed to load welcome hero section. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,50 +59,97 @@ export default function WelcomeHeroEdit() {
   };
 
   const handleAddVerse = () => {
-    const newVerse = {
-      id: Math.max(0, ...heroContent.bibleVerses.map((v) => v.id)) + 1,
-      verse: "",
-      reference: "",
-    };
+    const newId = heroContent.bibleVerses.length > 0 
+      ? Math.max(...heroContent.bibleVerses.map(v => v.id)) + 1 
+      : 1;
+      
     setHeroContent((prev) => ({
       ...prev,
-      bibleVerses: [...prev.bibleVerses, newVerse],
+      bibleVerses: [
+        ...prev.bibleVerses,
+        {
+          id: newId,
+          verse: "",
+          reference: "",
+        },
+      ],
     }));
-    setEditingVerseId(newVerse.id);
   };
 
-  const handleDeleteVerse = (id) => {
+  const handleRemoveVerse = (id) => {
     setHeroContent((prev) => ({
       ...prev,
       bibleVerses: prev.bibleVerses.filter((verse) => verse.id !== id),
     }));
-    setEditingVerseId(null);
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
-    console.log("Saved hero content:", heroContent);
-  };
-
-  // Auto-rotate Bible verses every 5 seconds
-  React.useEffect(() => {
-    if (!isEditing) {
-      const timer = setInterval(() => {
-        setCurrentVerseIndex((prev) =>
-          prev === heroContent.bibleVerses.length - 1 ? 0 : prev + 1
-        );
-      }, 5000);
-      return () => clearInterval(timer);
+    
+    // Reset current verse index if needed
+    if (currentVerseIndex >= heroContent.bibleVerses.length - 1) {
+      setCurrentVerseIndex(Math.max(0, heroContent.bibleVerses.length - 2));
     }
-  }, [isEditing, heroContent.bibleVerses.length]);
+  };
 
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateWelcomeHeroSection(heroContent);
+      setIsEditing(false);
+      toast.success("Welcome hero section updated successfully!");
+    } catch (error) {
+      console.error("Error saving welcome hero data:", error);
+      toast.error("Failed to update welcome hero section. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleImageUpload = (url) => {
+    setHeroContent((prev) => ({
+      ...prev,
+      backgroundImage: url,
+    }));
+  };
+
+  // If loading, show loading state
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // If error, show error state with retry button
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="font-medium text-gray-800">Welcome Hero Section</h3>
+        </div>
+        <div className="p-8 text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Render component
   return (
-    <div className="mb-12 border border-gray-200">
+    <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
       <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-        <h3 className="font-medium text-gray-800">Hero Section</h3>
+        <h3 className="font-medium text-gray-800">Welcome Hero Section</h3>
         <button
           onClick={() => setIsEditing(!isEditing)}
           className="px-4 py-2 text-sm border border-gray-200 bg-white"
+          disabled={isSaving}
         >
           {isEditing ? "Cancel" : "Edit Content"}
         </button>
@@ -104,32 +158,49 @@ export default function WelcomeHeroEdit() {
       {/* Preview */}
       {!isEditing ? (
         <div className="relative">
-          <div className="h-[500px] w-full relative bg-black">
+          <div className="h-[500px] w-full relative">
             <div className="absolute inset-0 bg-black/50 z-10"></div>
-            <Image
-              src={heroContent.backgroundImage}
-              alt="Hero background"
-              fill
-              style={{ objectFit: "cover" }}
-            />
+            {heroContent.backgroundImage ? (
+              <Image
+                src={heroContent.backgroundImage}
+                alt="Hero background"
+                fill
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-[url(/images/img_group_5.png)] bg-cover bg-no-repeat"></div>
+            )}
             <div className="absolute inset-0 z-20 flex flex-col justify-center px-12 md:px-24 lg:px-32">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium text-white whitespace-pre-line mb-4">
-                {heroContent.welcomeTitle}
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium text-white mb-4">
+                <span dangerouslySetInnerHTML={{ __html: formatDisplayText(heroContent.welcomeTitle) }}></span>
               </h1>
               <p className="text-white mb-8">{heroContent.subtitle}</p>
               <div>
-                <button className="px-6 py-3 bg-blue-600 text-white">
+                <button className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
                   {heroContent.buttonText}
                 </button>
               </div>
-              <div className="mt-8 max-w-md p-6 bg-white">
-                <p className="text-gray-600 italic mb-4">
-                  {heroContent.bibleVerses[currentVerseIndex].verse}
-                </p>
-                <p className="text-gray-800 font-medium">
-                  {heroContent.bibleVerses[currentVerseIndex].reference}
-                </p>
-              </div>
+              {heroContent.bibleVerses && heroContent.bibleVerses.length > 0 && (
+                <div className="mt-8 max-w-md p-6 bg-white rounded-lg shadow">
+                  <p className="text-gray-600 italic mb-4">
+                    {heroContent.bibleVerses[currentVerseIndex]?.verse || ""}
+                  </p>
+                  <p className="text-gray-800 font-medium">
+                    {heroContent.bibleVerses[currentVerseIndex]?.reference || ""}
+                  </p>
+                  <div className="flex mt-4 space-x-2">
+                    {heroContent.bibleVerses.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`w-3 h-3 rounded-full ${
+                          currentVerseIndex === index ? "bg-blue-600" : "bg-gray-300"
+                        }`}
+                        onClick={() => setCurrentVerseIndex(index)}
+                      ></button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -182,13 +253,12 @@ export default function WelcomeHeroEdit() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Background Image URL
               </label>
-              <input
-                type="text"
-                name="backgroundImage"
-                value={heroContent.backgroundImage}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300"
-                placeholder="/images/your-image.jpg"
+              <ImageUpload
+                onImageUploaded={handleImageUpload}
+                section="home-welcome-hero"
+                bucketName="home-files"
+                existingImageUrl={heroContent.backgroundImage}
+                buttonText="Upload Background Image"
               />
             </div>
           </div>
@@ -238,7 +308,7 @@ export default function WelcomeHeroEdit() {
                   </div>
                   <div className="flex justify-end">
                     <button
-                      onClick={() => handleDeleteVerse(verse.id)}
+                      onClick={() => handleRemoveVerse(verse.id)}
                       className="px-3 py-1 text-xs border border-red-200 text-red-600 bg-white"
                     >
                       Delete
@@ -253,8 +323,9 @@ export default function WelcomeHeroEdit() {
             <button
               onClick={handleSave}
               className="px-4 py-2 bg-blue-600 text-white"
+              disabled={isSaving}
             >
-              Save Changes
+              {isSaving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>

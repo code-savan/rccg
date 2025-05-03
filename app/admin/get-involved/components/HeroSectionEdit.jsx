@@ -168,11 +168,14 @@ export default function HeroSectionEdit() {
               </label>
 
               {/* Use the updated ImageUpload component which handles both upload and preview */}
-                  <ImageUpload
-                    section="hero"
-                    onImageUploaded={handleImageUploaded}
-                    existingImageUrl={sectionContent.backgroundImage}
-                  />
+              <ImageUpload
+                section="get-involved-hero"
+                bucketName="get-involved-files"
+                onImageUploaded={handleImageUploaded}
+                existingImageUrl={sectionContent.backgroundImage}
+                buttonText="Upload Background Image"
+                className="mb-4"
+              />
             </div>
           </div>
 

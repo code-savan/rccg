@@ -15,7 +15,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("about_us")
       .select(
-        "worship_with_us_heading, worship_with_us_description, worship_with_us_schedule, worship_with_us_location, worship_with_us_image"
+        "worship_with_us_heading, worship_with_us_description, worship_with_us_buttons, worship_with_us_image, worship_with_us_bible_verse, worship_with_us_bible_reference, worship_with_us_schedule, worship_with_us_location"
       )
       .order("id", { ascending: true })
       .limit(1)
@@ -68,6 +68,8 @@ export async function PUT(request) {
       worship_with_us_schedule: JSON.stringify(sectionData.schedule),
       worship_with_us_location: sectionData.location,
       worship_with_us_image: sectionData.image,
+      worship_with_us_bible_verse: sectionData.bibleVerse,
+      worship_with_us_bible_reference: sectionData.bibleReference,
     };
 
     let response;
@@ -79,7 +81,7 @@ export async function PUT(request) {
         .update(updateData)
         .eq("id", existingData.id)
         .select(
-          "worship_with_us_heading, worship_with_us_description, worship_with_us_schedule, worship_with_us_location, worship_with_us_image"
+          "worship_with_us_heading, worship_with_us_description, worship_with_us_buttons, worship_with_us_image, worship_with_us_bible_verse, worship_with_us_bible_reference, worship_with_us_schedule, worship_with_us_location"
         )
         .single();
 
@@ -106,7 +108,7 @@ export async function PUT(request) {
         .from("about_us")
         .insert([insertData])
         .select(
-          "worship_with_us_heading, worship_with_us_description, worship_with_us_schedule, worship_with_us_location, worship_with_us_image"
+          "worship_with_us_heading, worship_with_us_description, worship_with_us_buttons, worship_with_us_image, worship_with_us_bible_verse, worship_with_us_bible_reference, worship_with_us_schedule, worship_with_us_location"
         )
         .single();
 

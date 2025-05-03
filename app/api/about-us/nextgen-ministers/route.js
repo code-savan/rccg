@@ -4,7 +4,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import {
-  defaultAboutUsData,
   mapDBToNextGenMinistersSection,
 } from "@/lib/aboutUsFormData";
 
@@ -21,12 +20,12 @@ export async function GET() {
       .limit(1)
       .single();
 
-    // If no data is found, initialize with default data
-    if (error || !data) {
-      // Return default data if record doesn't exist yet
-      const defaultSectionData =
-        mapDBToNextGenMinistersSection(defaultAboutUsData);
-      return NextResponse.json(defaultSectionData);
+    if (error) {
+      console.error("Error fetching nextgen ministers section data:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch nextgen ministers section data" },
+        { status: 500 }
+      );
     }
 
     // Map to component format
@@ -53,7 +52,7 @@ export async function PUT(request) {
       .limit(1)
       .maybeSingle();
 
-    if (checkError && checkError.code !== "PGRST116") {
+    if (checkError) {
       console.error("Error checking for existing about-us data:", checkError);
       return NextResponse.json(
         { error: "Failed to update nextgen ministers section data" },
@@ -94,32 +93,11 @@ export async function PUT(request) {
 
       response = mapDBToNextGenMinistersSection(updatedData);
     } else {
-      // Insert new record with default values for other fields
-      const insertData = {
-        ...defaultAboutUsData,
-        ...updateData,
-      };
-
-      const { data: insertedData, error: insertError } = await supabase
-        .from("about_us")
-        .insert([insertData])
-        .select(
-          "nextgen_ministers_heading, nextgen_ministers_description, nextgen_ministers"
-        )
-        .single();
-
-      if (insertError) {
-        console.error(
-          "Error inserting nextgen ministers section data:",
-          insertError
-        );
-        return NextResponse.json(
-          { error: "Failed to create nextgen ministers section data" },
-          { status: 500 }
-        );
-      }
-
-      response = mapDBToNextGenMinistersSection(insertedData);
+      // If no record exists, return an error
+      return NextResponse.json(
+        { error: "No about_us record found to update" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(response);

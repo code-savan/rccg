@@ -11,25 +11,27 @@ import {
 
 export default function NextGenMinistryEdit() {
   const [sectionContent, setSectionContent] = useState({
-    title: "THE NEXT GEN MINISTRY",
-    description:
-      "At RCCG Rod of God Parish, our Youth Church is a vibrant community where young people grow in faith, purpose, and fellowship. Join us and be part of a movement for God!",
+    title: "",
+    description: "",
     image: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchNextGenMinistrySection();
         setSectionContent(data);
       } catch (error) {
         console.error("Error fetching NextGen Ministry section data:", error);
+        setError("Failed to load section data. Please try again later.");
         toast.error("Failed to load section data");
       } finally {
         setIsLoading(false);
@@ -56,6 +58,7 @@ export default function NextGenMinistryEdit() {
       toast.success("NextGen Ministry section updated successfully");
     } catch (error) {
       console.error("Error saving NextGen Ministry section:", error);
+      setError("Failed to update section. Please try again later.");
       toast.error("Failed to update section");
     } finally {
       setIsSaving(false);
@@ -69,6 +72,14 @@ export default function NextGenMinistryEdit() {
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-40 bg-gray-200 rounded"></div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <p className="text-red-500">{error}</p>
       </div>
     );
   }

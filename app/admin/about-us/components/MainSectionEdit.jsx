@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { fetchAboutUsData, updateAboutUsData } from "@/lib/services/aboutUsService";
+import ImageUpload from "@/components/@admin/ImageUpload";
+import { formatDisplayText } from "@/lib/aboutUsFormData";
 
 export default function MainSectionEdit() {
   const [sectionContent, setSectionContent] = useState({
     title: "",
     content: "",
+    backgroundImage: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +26,7 @@ export default function MainSectionEdit() {
         setSectionContent({
           title: data.title || "",
           content: data.content || "",
+          backgroundImage: data.backgroundImage || "",
         });
       } catch (error) {
         console.error("Error fetching about us data:", error);
@@ -38,6 +42,10 @@ export default function MainSectionEdit() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSectionContent((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (imageUrl) => {
+    setSectionContent((prev) => ({ ...prev, backgroundImage: imageUrl }));
   };
 
   const handleSave = async () => {
@@ -87,10 +95,12 @@ export default function MainSectionEdit() {
               }}
             >
               <div className="text-white">
-                <h2 className="text-3xl font-medium mb-4">
-                  {sectionContent.title}
+                <h2 className="text-3xl font-medium mb-4 whitespace-pre-line">
+                  {formatDisplayText(sectionContent.title)}
                 </h2>
-                <p className="text-xl">{sectionContent.content}</p>
+                <p className="text-xl whitespace-pre-line">
+                  {formatDisplayText(sectionContent.content)}
+                </p>
               </div>
             </div>
           </div>
@@ -126,15 +136,12 @@ export default function MainSectionEdit() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Background Image URL
+                Background Image
               </label>
-              <input
-                type="text"
-                name="backgroundImage"
-                value={sectionContent.backgroundImage}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="/images/your-image.jpg"
+              <ImageUpload
+                section="about-us-main"
+                onImageUploaded={handleImageChange}
+                existingImageUrl={sectionContent.backgroundImage}
               />
             </div>
           </div>

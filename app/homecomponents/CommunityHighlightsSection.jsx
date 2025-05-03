@@ -1,47 +1,85 @@
 "use client";
 
 import { Img, Text } from "../../components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function CommunityHighlightsSection() {
-  // Add state to track the currently displayed image
-  const [activeImage, setActiveImage] = useState({
-    src: "H1.jpeg",
-    alt: "Active",
-  });
+  const [activeImage, setActiveImage] = useState(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Array of image data
-  const images = [
-    { src: "H1.jpeg", alt: "H1" },
-    { src: "H2.jpeg", alt: "H2" },
-    { src: "H3.jpeg", alt: "H3" },
-    { src: "H4.jpeg", alt: "H4" },
-    { src: "H5.jpeg", alt: "H5" },
-    { src: "H6.jpeg", alt: "H6" },
-    { src: "H7.jpeg", alt: "H7" },
-    { src: "H8.jpeg", alt: "H8" },
-    { src: "H9.jpeg", alt: "H9" },
-    { src: "H10.jpeg", alt: "H10" },
-    { src: "H11.jpeg", alt: "H11" },
-    { src: "H12.jpeg", alt: "H12" },
-    { src: "H13.jpeg", alt: "H13" },
-    { src: "H14.jpeg", alt: "H14" },
-    { src: "H15.jpeg", alt: "H15" },
-    { src: "H16.jpeg", alt: "H16" },
-    { src: "H17.jpeg", alt: "H17" },
-    { src: "H18.jpeg", alt: "H18" },
-    { src: "H19.jpeg", alt: "H19" },
-    { src: "H20.jpeg", alt: "H20" },
-    { src: "H21.jpeg", alt: "H21" },
-    { src: "H22.jpeg", alt: "H22" },
-    { src: "H23.jpeg", alt: "H23" },
-    { src: "H24.jpeg", alt: "H24" },
-    { src: "H25.jpeg", alt: "H25" },
-    { src: "H26.jpeg", alt: "H26" },
-    { src: "H27.jpeg", alt: "H27" },
-    { src: "H28.jpeg", alt: "H28" },
-    { src: "H29.jpeg", alt: "H29" }
-  ];
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/home/highlights');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch highlights data');
+        }
+        
+        const result = await response.json();
+        setData(result);
+        
+        // Set the first image as active if there are images
+        if (result.highlights && result.highlights.length > 0) {
+          setActiveImage(result.highlights[0]);
+        }
+      } catch (err) {
+        console.error('Error fetching highlights data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="mt-[366px] sm:mt-[90px] self-stretch">
+        <div className="flex flex-col items-center bg-charcoal lg:py-40 md:py-5 sm:py-5">
+          <div className="container-xs mb-[72px] flex flex-col sm:pt-6 items-center gap-[146px] md:gap-[109px] md:px-5 sm:gap-0">
+            <div className="flex flex-col items-center gap-[22px] self-stretch">
+              <div className="animate-pulse h-10 bg-gray-600 rounded w-1/3"></div>
+              <div className="animate-pulse h-6 bg-gray-600 rounded w-1/2"></div>
+            </div>
+            <div className="animate-pulse flex flex-col gap-8 w-full">
+              <div className="h-64 bg-gray-600 rounded w-full"></div>
+              <div className="flex flex-wrap justify-center gap-4">
+                {[...Array(6)].map((_, index) => (
+                  <div key={index} className="h-16 w-16 bg-gray-600 rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="mt-[366px] sm:mt-[90px] self-stretch">
+        <div className="flex flex-col items-center bg-charcoal lg:py-40 md:py-5 sm:py-5">
+          <div className="container-xs mb-[72px] flex items-center justify-center md:px-5">
+            <div className="text-red-500 text-center py-16">
+              <h2 className="text-xl font-semibold">Error loading highlights</h2>
+              <p>Please try again later</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If no data is available, show nothing
+  if (!data || !data.highlights || data.highlights.length === 0) return null;
 
   return (
     <>
@@ -63,23 +101,23 @@ export default function CommunityHighlightsSection() {
             <div className="flex flex-col gap-[50px] self-stretch">
               <div className="relative h-[846px]">
                 <Img
-                  src={activeImage.src}
+                  src={activeImage}
                   width={1280}
                   height={752}
-                  alt={activeImage.alt}
+                  alt="Active"
                   className="absolute bottom-0 left-0 right-0 mx-auto h-[752px] w-full flex-1 rounded-[20px] object-cover object-top"
                 />
               </div>
               <div className="mx-12 sm:mx-2 flex gap-3 md:mx-0 overflow-x-auto ">
-                {images.map((image, index) => (
+                {data.highlights.map((image, index) => (
                   <Img
                     key={index}
-                    src={`${image.src}`}
+                    src={image}
                     width={186}
                     height={154}
-                    alt={image.alt}
+                    alt={`Highlight ${index + 1}`}
                     className={`md:h-[182px] sm:h-[50px] w-1/6 sm:w-1/3 rounded-[12px] sm:rounded-sm object-cover md:w-full cursor-pointer ${
-                      activeImage.src === image.src ? "" : "opacity-50"
+                      activeImage === image ? "" : "opacity-50"
                     }`}
                     onClick={() => setActiveImage(image)}
                   />

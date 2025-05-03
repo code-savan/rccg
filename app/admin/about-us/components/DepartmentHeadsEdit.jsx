@@ -11,9 +11,8 @@ import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function DepartmentHeadsEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "DEPARTMENT HEADS",
-    description:
-      "Our department heads coordinate various functions to ensure the smooth operation of our church.",
+    heading: "",
+    description: "",
     departmentHeads: [],
   });
 
@@ -21,16 +20,19 @@ export default function DepartmentHeadsEdit() {
   const [editingHeadId, setEditingHeadId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchDepartmentHeadsSection();
         setSectionContent(data);
       } catch (error) {
         console.error("Error fetching Department Heads section data:", error);
+        setError("Failed to load section data. Please try again later.");
         toast.error("Failed to load section data");
       } finally {
         setIsLoading(false);
@@ -112,6 +114,22 @@ export default function DepartmentHeadsEdit() {
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="text-red-500 text-center">
+          <p>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -360,15 +378,15 @@ export default function DepartmentHeadsEdit() {
                     Department Head Image
                   </label>
                   <ImageUpload
+                    onImageUploaded={(url) => handleImageChange(editingHeadId, url)}
+                    section="about-us-department-heads"
+                    bucketName="about-us-files"
                     existingImageUrl={
                       sectionContent.departmentHeads.find(
                         (m) => m.id === editingHeadId
                       )?.image || ""
                     }
-                    onImageUploaded={(imageUrl) =>
-                      handleImageChange(editingHeadId, imageUrl)
-                    }
-                    section="about-us/department-heads"
+                    buttonText="Upload Department Head Image"
                     disabled={isSaving}
                   />
                 </div>

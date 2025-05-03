@@ -1,57 +1,46 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
-// import { toast } from "react-hot-toast";
-// import {
-//   fetchMinistersSection,
-//   updateMinistersSection,
-// } from "@/lib/services/aboutUsService";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import {
+  fetchMinistersSection,
+  updateMinistersSection,
+} from "@/lib/services/aboutUsService";
 import ImageUpload from "@/components/@admin/ImageUpload";
+import { formatDisplayText } from "@/lib/aboutUsFormData";
 
 export default function MinistersEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "Our Ministers",
-    description:
-      "Meet our dedicated spiritual leaders who serve and guide our congregation with wisdom and compassion.",
-    ministers: [
-      {
-        id: 1,
-        name: "Pastor J.K Balogun",
-        role: "Head Pastor",
-        image: "/images/img_dsc_5797.png",
-      },
-      {
-        id: 2,
-        name: "Pastor(Mrs) F.O Balogun",
-        role: "Head Pastor",
-        image: "/images/img_dsc_9587.png",
-      },
-    ],
+    heading: "",
+    description: "",
+    ministers: [],
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingMinisterId, setEditingMinisterId] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Comment out API fetch
-  // useEffect(() => {
-  //   async function fetchSectionData() {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await fetchMinistersSection();
-  //       setSectionContent(data);
-  //     } catch (error) {
-  //       console.error("Error fetching Ministers section data:", error);
-  //       toast.error("Failed to load Ministers section data");
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
+  useEffect(() => {
+    async function fetchSectionData() {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await fetchMinistersSection();
+        setSectionContent(data);
+      } catch (error) {
+        console.error("Error fetching Ministers section data:", error);
+        setError("Failed to load Ministers section data. Please try again later.");
+        toast.error("Failed to load Ministers section data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  //   fetchSectionData();
-  // }, []);
+    fetchSectionData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,41 +96,39 @@ export default function MinistersEdit() {
   };
 
   const handleSave = () => {
-    // Comment out API save
-    setIsSaving(true);
-    // try to simulate saving
-    setTimeout(() => {
-      console.log("Saved section content:", sectionContent);
+    try {
+      setIsSaving(true);
+      updateMinistersSection(sectionContent);
       setIsEditing(false);
       setEditingMinisterId(null);
+      toast.success("Ministers section updated successfully");
+    } catch (error) {
+      console.error("Error saving Ministers section:", error);
+      setError("Failed to update Ministers section. Please try again later.");
+      toast.error("Failed to update Ministers section");
+    } finally {
       setIsSaving(false);
-      alert("Ministers section saved successfully");
-    }, 1000);
-
-    // try {
-    //   setIsSaving(true);
-    //   await updateMinistersSection(sectionContent);
-    //   setIsEditing(false);
-    //   setEditingMinisterId(null);
-    //   toast.success("Ministers section updated successfully");
-    // } catch (error) {
-    //   console.error("Error saving Ministers section:", error);
-    //   toast.error("Failed to update Ministers section");
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
-  //       <div className="animate-pulse">
-  //         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-  //         <div className="h-40 bg-gray-200 rounded"></div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-40 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden">
@@ -163,10 +150,10 @@ export default function MinistersEdit() {
         <div className="p-8 bg-white">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-semibold text-center mb-4">
-              {sectionContent.heading}
+              {formatDisplayText(sectionContent.heading)}
             </h2>
             <p className="text-gray-600 text-center mb-8 max-w-3xl mx-auto">
-              {sectionContent.description}
+              {formatDisplayText(sectionContent.description)}
             </p>
 
             <div className="grid sm:grid-cols-1 grid-cols-2 gap-6">
@@ -385,16 +372,15 @@ export default function MinistersEdit() {
                     Minister Image
                   </label>
                   <ImageUpload
+                    onImageUploaded={(url) => handleImageChange(editingMinisterId, url)}
+                    section="about-us-ministers"
+                    bucketName="about-us-files"
                     existingImageUrl={
                       sectionContent.ministers.find(
                         (m) => m.id === editingMinisterId
                       )?.image || ""
                     }
-                    onImageUploaded={(imageUrl) =>
-                      handleImageChange(editingMinisterId, imageUrl)
-                    }
-                    section="about-us/ministers"
-                    disabled={isSaving}
+                    buttonText="Upload Minister Image"
                   />
                 </div>
 

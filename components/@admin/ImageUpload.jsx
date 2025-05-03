@@ -1,24 +1,96 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import React, { useState, useRef, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { toast } from "react-hot-toast";
+
+// Create a direct Supabase client for the component
+const createDirectSupabaseClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase environment variables");
+    return null;
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+};
 
 export default function ImageUpload({
   onImageUploaded,
   section = "general",
+  bucketName = "",  // New parameter for explicit bucket name
   existingImageUrl = "",
+  buttonText = "Upload Image", // Still used for status messages
   className = "",
   disabled = false,
 }) {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(existingImageUrl);
   const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
+  const supabase = createDirectSupabaseClient();
 
+  // Determine which storage bucket to use based on section prefix or explicit bucket name
+  const determineBucket = () => {
+    // If explicit bucket name is provided, use it
+    if (bucketName) return bucketName;
+    
+    // Otherwise determine based on section prefix
+    if (section.startsWith("services-events")) {
+      return "services-events-files";
+    } else if (section.startsWith("about-us")) {
+      return "about-us-files";
+    } else if (section.startsWith("home-")) {
+      return "home-files";
+    } else if (section.startsWith("get-involved")) {
+      return "get-involved-files";
+    }
+    
+    // Default bucket
+    return "get-involved-files";
+  };
+
+  // Handle drag events
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  // Handle drop event
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  // Handle file input change
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (!selectedFile) return;
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
+  // Process the selected file
+  const handleFile = (selectedFile) => {
+    if (!selectedFile) {
+      console.log("No file selected");
+      return;
+    }
+
+    console.log("File selected:", selectedFile.name);
 
     // Check file type
     if (!selectedFile.type.includes("image/")) {
@@ -26,169 +98,193 @@ export default function ImageUpload({
       return;
     }
 
-    // Check file size (limit to 5MB)
-    if (selectedFile.size > 5 * 1024 * 1024) {
-      toast.error("File size exceeds 5MB limit");
+    // Check file size (limit to 15MB)
+    if (selectedFile.size > 15 * 1024 * 1024) {
+      toast.error("File size exceeds 15MB limit");
       return;
     }
 
     setFile(selectedFile);
+    console.log("File set in state:", selectedFile.name);
 
     // Create preview URL
     const objectUrl = URL.createObjectURL(selectedFile);
     setPreviewUrl(objectUrl);
+    console.log("Preview URL created");
 
-    // Clean up the preview URL when component unmounts
-    return () => URL.revokeObjectURL(objectUrl);
+    // Auto-upload when file is selected
+    setTimeout(() => {
+      uploadImage(selectedFile);
+    }, 100);
   };
 
-  const uploadImage = async () => {
-    if (!file) return;
+  // Modified to accept a file parameter for direct upload
+  const uploadImage = async (selectedFile) => {
+    const fileToUpload = selectedFile || file;
+    
+    if (!fileToUpload) {
+      console.log("No file selected for upload");
+      return;
+    }
+
+    if (!supabase) {
+      console.error("Supabase client not initialized");
+      toast.error("Upload failed: Supabase client not initialized");
+      return;
+    }
 
     try {
       setUploading(true);
+      console.log("Starting image upload process...");
 
       // Create a unique filename based on timestamp and original name
-
-      const fileExt = file.name.split(".").pop();
+      const fileExt = fileToUpload.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random()
         .toString(36)
         .substring(2, 15)}.${fileExt}`;
       const filePath = `${section}/${fileName}`;
+      console.log("File path for upload:", filePath);
 
-      // Determine which storage bucket to use based on section prefix
-      let bucketName = "get-involved-files";
-
-      if (section.startsWith("services-events")) {
-        bucketName = "services-events-files";
-      } else if (section.startsWith("about-us")) {
-        bucketName = "about-us-files";
-      }
-
-      // Upload to Supabase storage
+      // Get the bucket name
+      const targetBucket = determineBucket();
+      console.log("Selected bucket for upload:", targetBucket);
+      
+      // Try a simpler approach - direct upload without checking buckets
+      console.log("Uploading to Supabase storage...");
+      console.log("File size:", fileToUpload.size, "bytes");
+      console.log("File type:", fileToUpload.type);
+      
       const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file, {
+        .from(targetBucket)
+        .upload(filePath, fileToUpload, {
           cacheControl: "3600",
-          upsert: false,
+          upsert: true,
+          contentType: fileToUpload.type
         });
 
       if (error) {
-        throw error;
+        console.error("Supabase upload error:", error);
+        throw new Error(`Upload failed: ${error.message || JSON.stringify(error) || "Unknown error"}`);
       }
 
+      console.log("Upload successful, getting public URL...");
       // Get public URL for the uploaded file
       const { data: urlData } = supabase.storage
-        .from(bucketName)
+        .from(targetBucket)
         .getPublicUrl(filePath);
 
+      if (!urlData || !urlData.publicUrl) {
+        throw new Error("Failed to get public URL for uploaded file");
+      }
+
+      console.log("Public URL obtained:", urlData.publicUrl);
       // Call the callback with the new image URL
       onImageUploaded(urlData.publicUrl);
       toast.success("Image uploaded successfully");
     } catch (error) {
       console.error("Error uploading image:", error);
-      toast.error("Failed to upload image: " + error.message);
+      toast.error(`Failed to upload image: ${error.message || JSON.stringify(error) || "Unknown error"}`);
     } finally {
       setUploading(false);
     }
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
-
-  // Handle manual URL input change
-  const handleUrlChange = (e) => {
-    const value = e.target.value;
-    setPreviewUrl(value);
-    if (value) {
-      onImageUploaded(value);
-    }
-  };
-
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${className}`}>
-      {/* Left column: Upload controls */}
-      <div className="space-y-4">
-        <div
-          className={`border-2 border-dashed border-gray-300 rounded-lg p-4 text-center ${
-            disabled
-              ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer hover:bg-gray-50"
-          } transition-colors`}
-          onClick={disabled ? undefined : triggerFileInput}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/*"
-            disabled={disabled}
-          />
-          <div className="flex flex-col items-center justify-center py-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-gray-400 mb-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-            <p className="text-sm font-medium text-gray-600">
-              Click to upload an image or drag and drop
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              PNG, JPG, GIF up to 5MB
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <button
-            onClick={uploadImage}
-            disabled={!file || uploading || disabled}
-            className="px-4 py-2 bg-blue-600 text-white rounded w-full disabled:bg-gray-400"
-          >
-            {uploading ? "Uploading..." : "Upload Image"}
-          </button>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Or enter image URL manually
-          </label>
-          <input
-            type="text"
-            value={previewUrl}
-            onChange={handleUrlChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="https://example.com/image.jpg"
-            disabled={disabled}
-          />
-        </div>
-      </div>
-
-      {/* Right column: Preview */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-        {previewUrl ? (
+    <div className={`space-y-4 ${className}`}>
+      {/* Preview area - show if there's an existing image */}
+      {previewUrl && (
+        <div className="relative border rounded-lg overflow-hidden">
           <img
             src={previewUrl}
             alt="Preview"
-            className="w-full h-full object-contain max-h-48"
+            className="w-full h-48 object-cover"
           />
-        ) : (
-          <div className="text-center p-4">
-            <p className="text-gray-400">No image preview available</p>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={() => {
+              setPreviewUrl("");
+              setFile(null);
+            }}
+            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+            title="Remove image"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* Dropzone area */}
+      <div 
+        className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
+          dragActive 
+            ? "border-blue-500 bg-blue-50" 
+            : "border-gray-300 hover:border-gray-400"
+        } ${disabled || uploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={disabled ? null : handleDrop}
+        onClick={disabled ? null : () => fileInputRef.current?.click()}
+      >
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          accept="image/*"
+          disabled={uploading || disabled}
+        />
+        
+        <div className="flex flex-col items-center justify-center text-center">
+          {uploading ? (
+            <>
+              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p className="text-sm font-medium text-gray-700">Uploading image...</p>
+            </>
+          ) : (
+            <>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-10 w-10 text-gray-400 mb-3" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                />
+              </svg>
+              <p className="text-sm font-medium text-gray-700 mb-1">
+                {previewUrl ? "Replace image" : "Drop image here or click to browse"}
+              </p>
+              <p className="text-xs text-gray-500">
+                PNG, JPG, GIF up to 15MB
+              </p>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Display the current image URL for debugging */}
+      {process.env.NODE_ENV === 'development' && existingImageUrl && (
+        <div className="text-xs text-gray-500 truncate">
+          Current: {existingImageUrl}
+        </div>
+      )}
     </div>
   );
 }

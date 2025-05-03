@@ -1,67 +1,182 @@
-## oseji_s_application4
+# RCCG Rod of God Parish Website
 
-Generated with ❤️ from [DhiWise](https://www.dhiwise.com)
+## Overview
 
-## Description
+This is the official website for the Redeemed Christian Church of God (RCCG) Rod of God Parish, Indianapolis, Indiana. The website is built using Next.js and Tailwind CSS, with Supabase as the backend for database and storage.
 
-- This React application is built using [create-next-app](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-- It uses [Tailwind CSS](https://tailwindcss.com/)
-- The application is generated in JavaScript.
+## Features
 
-## Pre-requisites
+- Responsive design for all devices
+- Admin dashboard for content management
+- Dynamic content loading from Supabase
+- Image upload and management
+- Interactive components for user engagement
 
-- [git](https://git-scm.com/) - v2.13 or greater
-- [NodeJS](https://nodejs.org/en/) - v16 or greater
+## Tech Stack
+
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Backend**: Supabase (PostgreSQL database and storage)
+- **Deployment**: Vercel (recommended)
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/en/) - v16 or greater
 - [npm](https://www.npmjs.com/) - v6 or greater
+- [Supabase](https://supabase.com) account for database and storage
 
-## Running in dev environment
+## Getting Started
 
-1. `cd YOUR_APPLICATION`
-2. `npm install`
-3. `npm run dev`
+### Installation
 
-## Folder Structure
+1. Clone the repository
+   ```bash
+   git clone https://github.com/your-username/rccg-rod-of-god.git
+   cd rccg-rod-of-god
+   ```
 
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file in the root directory with your Supabase credentials
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-url.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+4. Start the development server
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application
+
+## Supabase Setup
+
+### Database Setup
+
+1. Create a new project in Supabase
+2. Navigate to the SQL Editor in the Supabase dashboard
+3. Execute the SQL scripts in the following order:
+   - `sql/create-home-page-table.sql` - Creates the home page table
+   - `sql/create-get-involved-table.sql` - Creates the get involved table
+   - `sql/create-about-us-table.sql` - Creates the about us table
+
+### Storage Setup
+
+1. Create the following storage buckets in your Supabase project:
+   - `get-involved-files`: For files related to the Get Involved page
+   - `services-events-files`: For files related to the Services & Events page
+   - `about-us-files`: For files related to the About Us page
+   - `home-files`: For files related to the Home page
+
+2. Set the following permissions for each bucket:
+   - Select "Public" bucket type
+   - Enable "Insert" and "Select" for "anon" and "authenticated" roles
+   - Disable "Update" and "Delete" for "anon" role
+   - Enable "Update" and "Delete" for "authenticated" role
+
+3. Run the `sql/create-storage-buckets.sql` script to set up the necessary RLS (Row Level Security) policies
+
+## API Structure
+
+The application uses RESTful API endpoints organized by section:
+
+### Home Page Endpoints
+- `GET/PUT /api/home` - Get/update all home page data
+- `GET/PUT /api/home/welcome-hero` - Welcome hero section
+- `GET/PUT /api/home/about` - About section
+- `GET/PUT /api/home/events` - Events section
+- `GET/PUT /api/home/highlights` - Highlights section
+- `GET/PUT /api/home/ministers` - Ministers section
+- `GET/PUT /api/home/service-times` - Service times section
+- `GET/PUT /api/home/location` - Location section
+- `GET/PUT /api/home/worship` - Worship with us section
+
+### Get Involved Endpoints
+- `GET/PUT /api/get-involved` - Get/update all get-involved data
+- `GET/PUT /api/get-involved/hero` - Hero section
+- `GET/PUT /api/get-involved/donation` - Donation section
+- `GET/PUT /api/get-involved/qa` - Q&A section
+- `GET/PUT /api/get-involved/contact` - Contact section
+
+### About Us Endpoints
+- `GET/PUT /api/about-us` - Get/update all about-us data
+- `GET/PUT /api/about-us/hero` - Hero section
+- `GET/PUT /api/about-us/welcome` - Welcome section
+- `GET/PUT /api/about-us/history` - History section
+- `GET/PUT /api/about-us/ministers` - Ministers section
+- `GET/PUT /api/about-us/department-heads` - Department heads section
+- `GET/PUT /api/about-us/departments` - Departments section
+- `GET/PUT /api/about-us/next-gen-ministers` - Next gen ministers section
+- `GET/PUT /api/about-us/worship-with-us` - Worship with us section
+
+## Component Structure
+
+### Admin Components
+
+The admin interface is organized by page and section:
+
+- `app/admin/home/components/` - Home page section editors
+- `app/admin/get-involved/components/` - Get Involved page section editors
+- `app/admin/about-us/components/` - About Us page section editors
+
+### Shared Admin Components
+
+Reusable components for the admin interface:
+
+- `components/@admin/ImageUpload.jsx` - Handles image uploads to Supabase storage
+- `components/@admin/AdminLayout.jsx` - Common layout for admin pages
+- `components/@admin/SectionEditor.jsx` - Base component for section editors
+
+## Using the ImageUpload Component
+
+The ImageUpload component is used throughout the admin interface to handle image uploads:
+
+```jsx
+<ImageUpload
+  section="section-name"            // Used for file path organization within the bucket
+  bucketName="bucket-name-files"    // Explicit bucket name (recommended)
+  onImageUploaded={handleImageUrl}  // Function to receive the public URL
+  existingImageUrl={currentImage}   // Current image URL for preview
+  buttonText="Custom Button Text"   // Custom text for the upload button
+  className="additional-classes"    // Additional CSS classes
+  disabled={isLoading}              // Disable during loading states
+/>
 ```
-.
-├── public --------- Static assets holder
-│   └── images --------- Contain all images
-│   └── fonts ---------- Font resources
-├── README.md
-├── src --------- Source code root
-│   ├── app --------- Application logic
-│   │   ├──<router> --------- Route-specific components
-│   │   │    └── page.jsx
-│   │   ├── layout.jsx
-│   │   └── page.jsx
-│   ├── components --------- Reusable components
-│   └── styles --------- Global style config
-│       ├── font.css ------ Font styling
-│       ├── index.css ------ Main stylesheet
-│       └── tailwind.css --- Default Tailwind modules
-├── next.config.js ----- Next.js config
-├── package.json
-├── postcss.config.js
-└── tailwind.config.js ----- Entire theme config, colors, fonts etc.
-```
+
+### Standard Image Update Flow
+For components that update a single image:
+1. Pass the appropriate section and bucketName to ImageUpload
+2. Implement a handleImageUploaded function to update your component state with the new URL
+3. The ImageUpload component will handle the upload and call your function with the public URL
+
+### Array Image Addition Flow
+For components that add to an array of images (like HighlightsSectionEdit):
+1. Pass the appropriate section and bucketName to ImageUpload
+2. Implement a handler function that adds the new URL to your array of images
+3. The ImageUpload component will handle the upload and call your function with the public URL
+
+## Deployment
+
+### Vercel Deployment
+
+1. Push your code to a GitHub repository
+2. Import the project in Vercel
+3. Add the environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Deploy the application
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Copyright (c) 2025 DhiWise
+## Acknowledgements
 
-Permission is hereby granted to any person obtaining a copy of this software and associated documentation files (the "Software"),to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## DhiWise Support
-
-<a href="https://twitter.com/dhiwise"><img src="https://user-images.githubusercontent.com/35039342/55471524-8e24cb00-5627-11e9-9389-58f3d4419153.png" width="60" alt="DhiWise Twitter"></a>
-
-<a href="https://www.youtube.com/c/DhiWise"><img src="https://cdn.vox-cdn.com/thumbor/0kpe316UpZWk53iw3bOLoJfF6hI=/0x0:1680x1050/1400x1400/filters:focal(706x391:974x659):format(gif)/cdn.vox-cdn.com/uploads/chorus_image/image/56414325/YTLogo_old_new_animation.0.gif" width="60" alt="DhiWise YouTube"></a>
-
-<a href="https://discord.gg/dhiwise-878500942604038215"><img src="https://user-images.githubusercontent.com/47489894/183043664-b01aac56-0372-458a-bde9-3f2a6bded21b.png" width="60" alt="DhiWise Discord"></a>
-<a href="https://docs.dhiwise.com/docs/react/intro"><img src="https://global-uploads.webflow.com/618e36726d3c0f19c9284e56/62383865d5477f2e4f6b6e2e_main-monogram-p-500.png" width="60" alt="DhiWise Documentation"></a>
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Supabase](https://supabase.com/)
+- [React](https://reactjs.org/)
+- [Heroicons](https://heroicons.com/)

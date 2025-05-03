@@ -18,9 +18,8 @@ import ImageUpload from "@/components/@admin/ImageUpload";
 
 export default function DepartmentsEdit() {
   const [sectionContent, setSectionContent] = useState({
-    heading: "OUR DEPARTMENTS",
-    description:
-      "At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There's a place for everyone to serve, grow, and make an impact!",
+    heading: "",
+    description: "",
     departments: [],
   });
 
@@ -34,16 +33,19 @@ export default function DepartmentsEdit() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchSectionData() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchDepartmentsSection();
         setSectionContent(data);
       } catch (error) {
         console.error("Error fetching Departments section data:", error);
+        setError("Failed to load section data. Please try again later.");
         toast.error("Failed to load section data");
       } finally {
         setIsLoading(false);
@@ -154,6 +156,7 @@ export default function DepartmentsEdit() {
       toast.success("Departments section updated successfully");
     } catch (error) {
       console.error("Error saving Departments section:", error);
+      setError("Failed to update Departments section. Please try again later.");
       toast.error("Failed to update Departments section");
     } finally {
       setIsSaving(false);
@@ -167,6 +170,14 @@ export default function DepartmentsEdit() {
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-40 bg-gray-200 rounded"></div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-12 border border-gray-200 rounded-lg overflow-hidden p-6">
+        <p className="text-red-600">{error}</p>
       </div>
     );
   }
@@ -374,10 +385,11 @@ export default function DepartmentsEdit() {
                     Department Image
                   </label>
                   <ImageUpload
-                    existingImageUrl={currentDepartment.image}
                     onImageUploaded={handleImageChange}
-                    section="about-us/departments"
-                    disabled={isSaving}
+                    section="about-us-departments"
+                    bucketName="about-us-files"
+                    existingImageUrl={currentDepartment.image}
+                    buttonText="Upload Department Image"
                   />
                 </div>
 
