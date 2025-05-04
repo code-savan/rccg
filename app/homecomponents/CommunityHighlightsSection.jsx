@@ -2,6 +2,7 @@
 
 import { Img, Text } from "../../components";
 import React, { useState, useEffect } from "react";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 export default function CommunityHighlightsSection() {
   // Add state to track the currently displayed image
@@ -71,9 +72,13 @@ export default function CommunityHighlightsSection() {
   }, []);
 
   // Use default data or fetched data
-  const title = data?.title || "COMMUNITY HIGHLIGHTS";
-  const subtitle = data?.subtitle || "See what's happening in our church community.";
+  let title = data?.title || "COMMUNITY HIGHLIGHTS";
+  let subtitle = data?.subtitle || "See what's happening in our church community.";
   const images = data?.highlights || defaultImages;
+  
+  // Handle escaped newlines in text
+  title = title.replace(/\\n/g, '\n');
+  subtitle = subtitle.replace(/\\n/g, '\n');
 
   // Helper function to ensure image paths have the correct format
   const formatImagePath = (imagePath) => {
@@ -105,7 +110,7 @@ export default function CommunityHighlightsSection() {
                 as="p"
                 className="text-center !font-poppins text-[16px] font-light leading-[130%] !text-white_color md:text-[15px] sm:text-[14px]"
               >
-                {subtitle}
+                {formatTextWithNewlines(subtitle)}
               </Text>
             </div>
             <div className="flex flex-col gap-[50px] self-stretch">

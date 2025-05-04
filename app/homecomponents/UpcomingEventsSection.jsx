@@ -3,6 +3,7 @@
 import { Text, Img, Heading, Button } from "../../components";
 import React, { useState, useEffect } from "react";
 import AliceCarousel from "react-alice-carousel";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 export default function UpcomingEventsSection() {
   const [sliderState, setSliderState] = useState(0);
@@ -89,9 +90,9 @@ export default function UpcomingEventsSection() {
         <Text
           size="textmd"
           as="p"
-          className="text-[20px] font-normal leading-6 !text-gray-600_01 lg:text-[18px] md:text-[16px] sm:text-[15px]"
+          className="text-[20px] font-normal leading-[130%] !text-gray-600_01 lg:text-[18px] md:text-[16px] sm:text-[15px]"
         >
-          {event.description}
+          {formatTextWithNewlines(event.description)}
         </Text>
         <div className="flex gap-4 self-stretch sm:flex-col">
           <div className="flex items-center gap-2">
@@ -135,6 +136,13 @@ export default function UpcomingEventsSection() {
   const events = data?.events || defaultEvents;
   const title = data?.title || "Upcoming events";
   const subtitle = data?.subtitle || "";
+  
+  // Process event descriptions to handle escaped newlines
+  events.forEach(event => {
+    if (event.description) {
+      event.description = event.description.replace(/\\n/g, '\n');
+    }
+  });
 
   // Generate slides based on screen size
   const items = events.map((event, index) => (

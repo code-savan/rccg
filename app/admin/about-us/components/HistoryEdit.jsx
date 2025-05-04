@@ -102,7 +102,7 @@ export default function HistoryEdit() {
               {sectionContent.image && (
                 <div className="rounded-lg overflow-hidden bg-gray-100 border">
                   <img
-                    src="/images/img_verse.png"
+                    src={sectionContent.image}
                     alt="Church History"
                     className="w-full h-auto object-cover"
                   />

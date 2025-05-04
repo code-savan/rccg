@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Text, Button } from "../../components";
 import React, { useState, useEffect } from "react";
 import { formatDisplayText } from "@/lib/homeFormData";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 export default function WorshipInvitationSection() {
   const [data, setData] = useState(null);
@@ -33,14 +34,19 @@ export default function WorshipInvitationSection() {
   }, []);
 
   // Default data
-  const title = data?.title || "Come worship\nwith us";
-  const description = data?.description || "Join us as we celebrate the beginning of forever. With love in their hearts and joy to share, Nina and Chris invite you to witness their journey as they say \"I do.\"";
-  const bibleVerse = data?.bibleVerse || "For where two or three gather in my name, there am I with them.";
+  let title = data?.title || "Come worship\nwith us";
+  let description = data?.description || "Join us as we celebrate the beginning of forever. With love in their hearts and joy to share, Nina and Chris invite you to witness their journey as they say \"I do.\"";
+  let bibleVerse = data?.bibleVerse || "For where two or three gather in my name, there am I with them.";
   const bibleReference = data?.bibleReference || "Matthew 18:20 (NIV)";
   const buttons = data?.buttons || [
     { id: 1, text: "RCCG Live", link: "https://www.youtube.com/@RCCGRodofGodParish" },
     { id: 2, text: "Next Gen Live", link: "https://www.youtube.com/@RCCGRodofGodParish" }
   ];
+  
+  // Handle escaped newlines in text
+  title = title.replace(/\\n/g, '\n');
+  description = description.replace(/\\n/g, '\n');
+  bibleVerse = bibleVerse.replace(/\\n/g, '\n');
 
   // Loading skeleton
   if (loading) {
@@ -83,17 +89,10 @@ export default function WorshipInvitationSection() {
         <div className="container-xs flex items-center justify-center md:flex-col md:gap-10 md:px-8 sm:px-5">
           <div className="flex w-[42%] flex-col items-center gap-[30px] md:w-full md:px-5">
             <p className="mx-auto text-center text-[40px] w-full font-normal leading-[110%] !text-charcoal md:ml-0 lg:text-[36px] md:text-[32px] sm:text-[28px]">
-              <>
-                {title.split('\n').map((line, i) => (
-                  <React.Fragment key={i}>
-                    {line}
-                    {i < title.split('\n').length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </>
+              {formatTextWithNewlines(title)}
             </p>
             <p className="text-center text-[16px] sm:text-[14px] font-normal leading-[130%] !text-gray-600_01">
-              {description}
+              {formatTextWithNewlines(description)}
             </p>
             {buttons.map((button, index) => (
               <Link key={index} href={button.link} className="flex" target="_blank" rel="noopener noreferrer">
@@ -115,17 +114,10 @@ export default function WorshipInvitationSection() {
                 className="text-[20px] font-normal leading-[130%] !text-charcoal lg:text-[18px] md:text-[16px] sm:text-[15px]"
               >
                 <span className="text-gray-600_01">
-                  <>
-                    {bibleVerse}
-                    <br />
-                  </>
+                  {formatTextWithNewlines(bibleVerse)}
                 </span>
-                <span className="text-charcoal">
-                  <>
-                    <br />
-                  </>
-                </span>
-                <span className="font-medium text-charcoal">
+                <span className="text-charcoal mt-4 block"></span>
+                <span className="font-medium text-charcoal block mt-4">
                   — {bibleReference}
                 </span>
               </Text>

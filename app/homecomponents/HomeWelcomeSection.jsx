@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Play, Pause } from "lucide-react";
 import Link from "next/link";
 import { formatDisplayText } from "@/lib/homeFormData";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 // Default texts for fallback
 const defaultTexts = [
@@ -76,11 +77,19 @@ export default function HomeWelcomeSection() {
   };
 
   // Use default data or fetched data
-  const welcomeTitle = data?.welcomeTitle || "Welcome to the\nRedeemed Christian\nChurch of God.";
+  let welcomeTitle = data?.welcomeTitle || "Welcome to the\nRedeemed Christian\nChurch of God.";
   const subtitle = data?.subtitle || "Rod Of God Parish, Indianapolis Indiana USA.";
   const buttonText = data?.buttonText || "Learn more";
   const verses = data?.bibleVerses || defaultTexts;
   const currentVerse = verses[currentIndex] || {};
+  
+  // Handle escaped newlines in text
+  welcomeTitle = welcomeTitle.replace(/\\n/g, '\n');
+  
+  // Process Bible verse content if it exists
+  if (currentVerse.verse) {
+    currentVerse.verse = currentVerse.verse.replace(/\\n/g, '\n');
+  }
 
   return (
     <>
@@ -93,8 +102,9 @@ export default function HomeWelcomeSection() {
                 size="headingxl"
                 as="h1"
                 className="lg:text-[96px] font-semibold leading-[100%] !text-white_color md:text-[48px] sm:text-[32px]"
-                dangerouslySetInnerHTML={{ __html: formatDisplayText(welcomeTitle) }}
-              />
+              >
+                {formatTextWithNewlines(welcomeTitle)}
+              </Heading>
               <Text
                 size="textlg"
                 as="p"
@@ -125,9 +135,9 @@ export default function HomeWelcomeSection() {
                   <Text
                     size="textxs"
                     as="p"
-                    className="!font-poppins text-[14px] font-normal leading-[100%] !text-gray-700_01"
+                    className="!font-poppins text-[14px] font-normal leading-[130%] !text-gray-700_01"
                   >
-                    {currentVerse.verse || defaultTexts[0].content}
+                    {formatTextWithNewlines(currentVerse.verse || defaultTexts[0].content)}
                   </Text>
                 </div>
               </div>

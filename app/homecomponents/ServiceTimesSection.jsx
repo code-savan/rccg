@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button, Text, Heading } from "../../components";
 import SundayServiceInfo from "../../components/SundayServiceInfo";
 import React, { useState, useEffect } from "react";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 export default function ServiceTimesSection() {
   const [data, setData] = useState(null);
@@ -32,6 +33,23 @@ export default function ServiceTimesSection() {
     fetchData();
   }, []);
 
+  // Default data
+  let heading = data?.heading || "Our Service times";
+  let description = data?.description || "Join us at RCCG Rod of God Parish for uplifting worship and powerful teachings. Our services are a time of fellowship, prayer, and spiritual growth.";
+  const services = data?.services || [];
+  const seeMoreText = data?.seeMoreText || "See more";
+
+  // Handle escaped newlines in text
+  heading = heading?.replace(/\\n/g, '\n');
+  description = description?.replace(/\\n/g, '\n');
+
+  // Process service descriptions to handle escaped newlines
+  services.forEach(service => {
+    if (service.description) {
+      service.description = service.description.replace(/\\n/g, '\n');
+    }
+  });
+
   // Original UI is preserved while data is loading
   if (loading || error || !data) {
     return (
@@ -46,9 +64,9 @@ export default function ServiceTimesSection() {
             </Heading>
             <Text
               as="p"
-              className="self-stretch text-center !font-poppins text-[16px] font-light leading-[120%] !text-charcoal"
+              className="self-stretch text-center !font-poppins text-[16px] font-light leading-[130%] !text-charcoal"
             >
-              Join us at RCCG Rod of God Parish for uplifting worship and powerful teachings. Our services are a time of fellowship, prayer, and spiritual growth.
+              {formatTextWithNewlines("Join us at RCCG Rod of God Parish for uplifting worship and powerful teachings. Our services are a time of fellowship, prayer, and spiritual growth.")}
             </Text>
           </div>
           <div className="flex gap-6 self-stretch md:flex-col">
@@ -111,10 +129,9 @@ export default function ServiceTimesSection() {
           </div>
           <Link href="/service-times" className="w-fit">
             <Button
-              color="gray_400"
               variant="outline"
               shape="round"
-              className="min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] sm:px-5 hover:bg-[#4D88FF] text-[#000] hover:text-white_color hover:border-[#4D88FF] transition-colors"
+              className="min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] sm:px-5 hover:bg-[#4D88FF] text-[#000000] hover:text-white_color hover:border-[#4D88FF] transition-colors"
             >
               {data.seeMoreText || "See more"}
             </Button>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Text, Button, Heading } from "../../components";
 import UserProfile from "../../components/UserProfile";
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 const serviceDepartmentGrid = [
   {
@@ -110,36 +111,77 @@ const serviceDepartmentGrid = [
 ];
 
 export default function AboutUsSection4() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/about-us/departments');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch departments data');
+        }
+        
+        const result = await response.json();
+        setData(result);
+      } catch (err) {
+        console.error('Error fetching departments data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Default content
+  let title = data?.title || "OUR DEPARTMENTS";
+  let description = data?.description || "At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There's a place for everyone to serve, grow, and make an impact!";
+  const departments = data?.departments || serviceDepartmentGrid;
+  
+  // Handle escaped newlines
+  title = title.replace(/\\n/g, '\n');
+  description = description.replace(/\\n/g, '\n');
+
   return (
     <>
       {/* about us section */}
-      <div className="mt-[146px] flex flex-col items-center md:mt-24 sm:mt-16">
-        <div className="container-xs flex flex-col items-center px-14 md:px-8 sm:px-5">
+      <div className="mt-[146px] flex flex-col items-center md:mt-24 sm:mt-16 overflow-hidden w-full">
+        <div className="container-xs flex flex-col items-center px-14 md:px-8 sm:px-5 w-full">
           <div className="flex w-[66%] flex-col items-center gap-[22px] md:w-full">
             <Heading
               as="h2"
               className="text-[40px] font-semibold text-center lg:text-[36px] md:text-[32px] sm:text-[28px]"
             >
-              OUR DEPARTMENTS
+              {formatTextWithNewlines(title, { noWrapper: true })}
             </Heading>
             <Text
               as="p"
               className="self-stretch text-center !font-poppins text-[16px] font-light leading-[130%] !text-charcoal md:text-[15px] sm:text-[14px]"
             >
-              <>
-                At RCCG Rod of God Parish, our various departments serve to
-                strengthen the church and community. There’s a place for
-                everyone to serve, grow, and make an impact!
-              </>
+              {formatTextWithNewlines(description, { noWrapper: true })}
             </Text>
           </div>
         </div>
-        <div className="mt-[146px] grid w-[88%] grid-cols-2 justify-center gap-[26px] gap-y-[146px] md:mt-20 sm:mt-16 md:grid-cols-1 md:gap-y-[90px] sm:gap-y-[70px]">
-          <Suspense fallback={<div>Loading feed...</div>}>
-            {serviceDepartmentGrid.map((d, index) => (
-              <UserProfile {...d} key={"aboutUs" + index} className="w-full" />
-            ))}
-          </Suspense>
+        <div className="mt-[146px] w-full max-w-[1200px] mx-auto px-4 md:mt-20 sm:mt-16">
+          <div className="grid grid-cols-2 gap-[26px] gap-y-[146px] md:grid-cols-1 md:gap-y-[90px] sm:gap-y-[70px]">
+            <Suspense fallback={<div>Loading feed...</div>}>
+              {departments.map((d, index) => (
+                <UserProfile 
+                  userImage={d.userImage || d.image}
+                  userTitle={d.userTitle || d.title}
+                  userDescription={formatTextWithNewlines(d.userDescription || d.description, { noWrapper: true })}
+                  key={"aboutUs" + index} 
+                  className="w-full" 
+                />
+              ))}
+            </Suspense>
+          </div>
         </div>
       </div>
     </>

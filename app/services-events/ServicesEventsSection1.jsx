@@ -1,11 +1,94 @@
 "use client";
 
 import { Text, Img, Slider, Heading, Button } from "../../components";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { formatTextWithNewlines } from "@/lib/textUtils";
+
+// Default monthly programs for server-side rendering
+const defaultMonthlyPrograms = [
+  {
+    day: "First Sunday",
+    time: "10:00 AM - 12:30 PM",
+    title: "Holy Communion Service",
+    description: "Join us as we partake in the Lord's Supper, remembering Christ's sacrifice and celebrating our communion with Him and each other."
+  },
+  {
+    day: "Last Friday",
+    time: "10:00 PM - 1:00 AM",
+    title: "Holy Ghost Night",
+    description: "Experience a powerful night of prayer, worship, and ministry of the Holy Spirit. Come expecting a divine encounter."
+  },
+  {
+    day: "Third Sunday",
+    time: "10:00 AM - 12:30 PM",
+    title: "Thanksgiving Service",
+    description: "A special service dedicated to giving thanks to God for His faithfulness and blessings in our lives and church community."
+  }
+];
+
+// Default content
+const defaultContent = {
+  title: "Monthly Programs",
+  description: "Join us for our monthly special services and events. These gatherings provide unique opportunities for spiritual growth, fellowship, and experiencing God's presence in powerful ways.",
+  monthlyPrograms: defaultMonthlyPrograms
+};
 
 export default function ServicesEventsSection1() {
   const [sliderState, setSliderState] = React.useState(0);
   const sliderRef = React.useRef(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true when component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Fetch data from the API
+  useEffect(() => {
+    // Only fetch data on the client side
+    if (!isClient) return;
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Use a try-catch block to handle the case where the API doesn't exist yet
+        try {
+          const response = await fetch('/api/services-events/monthly-programs');
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch monthly programs data');
+          }
+          
+          const result = await response.json();
+          setData(result);
+        } catch (fetchError) {
+          console.log('API not available yet, using default data');
+          // Just use default data if API doesn't exist yet
+        }
+      } catch (err) {
+        console.error('Error fetching monthly programs data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isClient]);
+  
+  // The API returns data based on mapDBToMonthlyProgramsSection structure
+  // { heading, monthlyPrograms }
+  let title = data?.heading || "Monthly Programs";
+  const programsToDisplay = data?.monthlyPrograms || defaultMonthlyPrograms;
+  
+  // Add console logging to debug the data
+  console.log('Monthly Programs Data:', data);
+  
+  // Handle escaped newlines
+  if (title) title = title.replace(/\\n/g, '\n');
 
   return (
     <>
@@ -18,7 +101,7 @@ export default function ServicesEventsSection1() {
               as="h2"
               className="text-[32px] font-semibold lg:text-[30px] md:text-[28px] sm:text-[24px]"
             >
-              Monthly
+              {formatTextWithNewlines(title, { noWrapper: true })}
             </Heading>
           </div>
         </div>
@@ -42,31 +125,23 @@ export default function ServicesEventsSection1() {
               }}
               ref={sliderRef}
               className="w-full sm:px-0"
-              items={[...Array(18)].map(() => (
-                <React.Fragment key={Math.random()}>
+              items={programsToDisplay.map((program, index) => (
+                <React.Fragment key={index}>
                   <div className="px-3 md:px-2 sm:px-4">
                     <div className="flex flex-col justify-center gap-[138px] rounded-[16px] border border-solid border-gray-300 bg-white_color px-[18px] py-[42px] md:gap-[103px] md:p-5 sm:gap-[69px] w-full">
                       <div className="flex flex-col items-start gap-2">
                         <Text
                           size="textlg"
                           as="p"
-                          className="text-[24px] font-medium leading-[100%] !text-gray-900 lg:text-[22px] md:text-[20px] sm:text-[18px]"
+                          className="text-[24px] font-medium !text-gray-900 lg:text-[22px] md:text-[20px] sm:text-[18px]"
                         >
-                          <>
-                            Thanksgiving & Anointing
-                            <br />
-                            Service
-                          </>
+                          {formatTextWithNewlines(program.title, { noWrapper: true })}
                         </Text>
                         <Text
                           as="p"
                           className="text-[16px] font-normal leading-[19px] !text-gray-600_01"
                         >
-                          <>
-                            Come worship with us every Sunday.
-                            <br />
-                            We promise you'll be filled with the holy spirit.
-                          </>
+                          {formatTextWithNewlines(program.description, { noWrapper: true })}
                         </Text>
                       </div>
                       <div className="flex flex-col gap-3">
@@ -97,7 +172,7 @@ export default function ServicesEventsSection1() {
                             as="p"
                             className="text-[16px] font-normal !text-gray-900_02"
                           >
-                            1st Sunday of the Month
+                            {program.day}
                           </Text>
                         </div>
                         <div className="flex items-center gap-3">
@@ -112,7 +187,7 @@ export default function ServicesEventsSection1() {
                             as="p"
                             className="text-[16px] font-normal !text-gray-900_02"
                           >
-                            10:30am – 1:00pm
+                            {program.time}
                           </Text>
                         </div>
                       </div>

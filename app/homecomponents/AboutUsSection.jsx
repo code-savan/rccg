@@ -1,6 +1,7 @@
 import { Text } from "../../components";
 import React, { useState, useEffect } from "react";
 import { formatDisplayText } from "@/lib/homeFormData";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 export default function AboutUsSection() {
   const [data, setData] = useState(null);
@@ -13,11 +14,11 @@ export default function AboutUsSection() {
       try {
         setLoading(true);
         const response = await fetch('/api/home/about');
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch about section data');
         }
-        
+
         const result = await response.json();
         setData(result);
       } catch (err) {
@@ -64,7 +65,7 @@ export default function AboutUsSection() {
 
   // Default content
   const title = data?.title || "About Us";
-  const content = data?.content || `RCCG ROG is a Bible-based, evangelistic, Spirit-empowered
+  let content = data?.content || `RCCG ROG is a Bible-based, evangelistic, Spirit-empowered
   church.
   At RCCG ROG, we're all about people, because God is all about
   people.
@@ -78,6 +79,9 @@ export default function AboutUsSection() {
   Want to get started? We'd love for you to join us for a
   service, and we're
   here to help you get connected.`;
+  
+  // Handle escaped newlines in content
+  content = content.replace(/\\n/g, '\n');
 
   return (
     <>
@@ -92,19 +96,8 @@ export default function AboutUsSection() {
             >
               {title}
             </Text>
-            <div className="mb-[18px] self-stretch text-center font-poppins text-[16px] sm:text-[13px] font-normal leading-[100%]">
-              <span className="text-gray-400">
-                {content.split("\n\nWant to get started?")[0]}
-              </span>
-              <span className="text-white_color">
-                <>
-                  <br />
-                  Want to get started? We'd love for you to join us for a
-                  service, and we're
-                  <br />
-                  here to help you get connected.
-                </>
-              </span>
+            <div className="mb-[18px] self-stretch text-center text-white font-poppins text-[16px] sm:text-[13px] font-normal leading-[130%]">
+              {formatTextWithNewlines(content)}
             </div>
           </div>
         </div>

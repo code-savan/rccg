@@ -1,11 +1,90 @@
 "use client";
 
 import { Button, Img, Text, Slider, Heading } from "../../components";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { formatTextWithNewlines } from "@/lib/textUtils";
+
+// Default program items - these must be the same on server and client
+const defaultPrograms = [
+  {
+    title: 'Sunday Service',
+    time: '10:00 AM - 12:30 PM',
+    description: 'Join us for a powerful service filled with worship, prayer, and the Word of God. All are welcome!'
+  },
+  {
+    title: 'Bible Study',
+    time: '7:00 PM - 8:30 PM',
+    description: 'Dive deeper into God\'s Word with our interactive Bible study sessions. Everyone is encouraged to participate.'
+  },
+  {
+    title: 'Prayer Meeting',
+    time: '6:30 PM - 8:00 PM',
+    description: 'Come together in prayer as we intercede for our church, community, and world. Experience the power of corporate prayer.'
+  }
+];
 
 export default function ServicesAndEventsSection() {
   const [sliderState, setSliderState] = React.useState(0);
   const sliderRef = React.useRef(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true when component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Fetch data from the API
+  useEffect(() => {
+    // Only fetch data on the client side
+    if (!isClient) return;
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Use a try-catch block to handle the case where the API doesn't exist yet
+        try {
+          const response = await fetch('/api/services-events/weekly-programs');
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch weekly programs data');
+          }
+          
+          const result = await response.json();
+          setData(result);
+        } catch (fetchError) {
+          console.log('API not available yet, using default data');
+          // Just use default data if API doesn't exist yet
+        }
+      } catch (err) {
+        console.error('Error fetching weekly programs data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isClient]);
+
+  // The API returns data based on mapDBToWeeklyProgramsSection structure
+  // { heading, description, weeklyPrograms }
+  let title = data?.heading || "Weekly and Monthly\nChurch Programs";
+  let description = data?.description || "This team maintains the cleanliness and beauty of God's house, creating a welcoming and reverent environment for worship.";
+  let weeklyTitle = "Weekly";
+  const weeklyPrograms = data?.weeklyPrograms || [];
+  
+  // Add console logging to debug the data
+  console.log('Weekly Programs Data:', data);
+  
+  // Handle escaped newlines
+  title = title.replace(/\\n/g, '\n');
+  description = description.replace(/\\n/g, '\n');
+
+  // Use default programs if no data is available or if we're still loading
+  const programsToDisplay = (!loading && weeklyPrograms.length > 0) ? weeklyPrograms : defaultPrograms;
 
   return (
     <>
@@ -17,18 +96,13 @@ export default function ServicesAndEventsSection() {
               as="h2"
               className="text-center text-[40px] font-semibold leading-[100%] lg:text-[36px] md:text-[32px] sm:text-[28px]"
             >
-              <>
-                Weekly and Monthly
-                <br />
-                Church Programs
-              </>
+              {formatTextWithNewlines(title, { noWrapper: true })}
             </Heading>
             <Text
               as="p"
               className="self-stretch text-center !font-poppins text-[16px] font-light leading-[120%] !text-charcoal"
             >
-              This team maintains the cleanliness and beauty of God’s house, creating a welcoming and reverent environment for worship.
-
+              {formatTextWithNewlines(description, { noWrapper: true })}
             </Text>
           </div>
         </div>
@@ -39,103 +113,86 @@ export default function ServicesAndEventsSection() {
               as="h3"
               className="text-[32px] font-semibold lg:text-[30px] md:text-[28px] sm:text-[24px]"
             >
-              Weekly
+              {weeklyTitle}
             </Heading>
           </div>
           <div className="mx-auto flex w-full gap-6 overflow-x-hidden md:mx-0 md:flex-col">
-            <Slider
-              autoPlay
-              autoPlayInterval={2000}
-              responsive={{
-                0: { items: 1 },
-                551: { items: 1 },
-                768: { items: 1 },
-                1051: { items: 3 },
-              }}
-              paddingLeft={0}
-              paddingRight={0}
-              disableDotsControls
-              activeIndex={sliderState}
-              onSlideChanged={(e) => {
-                setSliderState(e?.item);
-              }}
-              ref={sliderRef}
-              className="w-full sm:px-0"
-              items={[...Array(12)].map(() => (
-                <React.Fragment key={Math.random()}>
-                  <div className="px-3 md:px-2 sm:px-4">
-                    <div className="flex flex-col justify-center gap-[138px] rounded-[16px] border border-solid border-gray-300 bg-white_color px-[18px] py-[42px] md:gap-[103px] md:p-5 sm:gap-[69px] w-full">
-                      <div className="flex flex-col items-start gap-2">
-                        <Text
-                          size="textlg"
-                          as="p"
-                          className="text-[24px] font-medium !text-gray-900 lg:text-[22px] md:text-[20px] sm:text-[18px]"
-                        >
-                          Sunday Prayer Meeting
-                        </Text>
-                        <Text
-                          as="p"
-                          className="text-[16px] font-normal leading-[19px] !text-gray-600_01"
-                        >
-                          <>
-                            Come worship with us every Sunday.
-                            <br />
-                            We promise you'll be filled with the holy spirit.
-                          </>
-                        </Text>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-2">
-                          <Img
-                            src="img_navigation_house_03_gray_900_02.svg"
-                            width={20}
-                            height={20}
-                            alt="Navigation"
-                            className="h-[20px]"
-                          />
+            {/* Only render slider on client side to avoid hydration errors */}
+            {isClient ? (
+              <Slider
+                autoPlay
+                autoPlayInterval={2000}
+                responsive={{
+                  0: { items: 1 },
+                  551: { items: 1 },
+                  768: { items: 1 },
+                  1051: { items: 3 },
+                }}
+                paddingLeft={0}
+                paddingRight={0}
+                disableDotsControls
+                activeIndex={sliderState}
+                onSlideChanged={(e) => {
+                  setSliderState(e?.item);
+                }}
+                ref={sliderRef}
+                className="w-full sm:px-0"
+                items={programsToDisplay.map((program, index) => (
+                  <React.Fragment key={index}>
+                    <div className="px-3 md:px-2 sm:px-4">
+                      <div className="flex flex-col justify-center gap-[138px] rounded-[16px] border border-solid border-gray-300 bg-white_color px-[18px] py-[42px] md:gap-[103px] md:p-5 sm:gap-[69px]">
+                        <div className="flex flex-col items-start gap-2">
                           <Text
+                            size="textlg"
                             as="p"
-                            className="text-[16px] font-normal !text-gray-900_02"
+                            className="text-[24px] font-normal !text-charcoal lg:text-[22px] md:text-[20px] sm:text-[18px]"
                           >
-                            Parish House Indianapolis.
+                            {formatTextWithNewlines(program.title, { noWrapper: true })}
+                          </Text>
+                          <Text
+                            size="textmd"
+                            as="p"
+                            className="text-[20px] font-normal !text-gray-600_01 lg:text-[18px] md:text-[16px]"
+                          >
+                            {formatTextWithNewlines(program.time, { noWrapper: true })}
                           </Text>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Img
-                            src="img_calendar_calendar_gray_900_02.svg"
-                            width={20}
-                            height={20}
-                            alt="Calendar"
-                            className="h-[20px]"
-                          />
+                        <div className="flex flex-col items-start gap-2">
                           <Text
+                            size="textmd"
                             as="p"
-                            className="text-[16px] font-normal !text-gray-900_02"
+                            className="text-[20px] font-normal !text-gray-600_01 lg:text-[18px] md:text-[16px]"
                           >
-                            Sundays
-                          </Text>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Img
-                            src="img_search.svg"
-                            width={20}
-                            height={20}
-                            alt="Search"
-                            className="h-[20px]"
-                          />
-                          <Text
-                            as="p"
-                            className="text-[16px] font-normal !text-gray-900_02"
-                          >
-                            9am – 9:30am
+                            {formatTextWithNewlines(program.description, { noWrapper: true })}
                           </Text>
                         </div>
                       </div>
                     </div>
+                  </React.Fragment>
+                ))}
+              />
+            ) : (
+              // Fallback for server-side rendering
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4">
+                {defaultPrograms.map((program, index) => (
+                  <div key={index} className="flex flex-col justify-center gap-8 rounded-[16px] border border-solid border-gray-300 bg-white_color px-[18px] py-[42px] md:p-5">
+                    <div className="flex flex-col items-start gap-2">
+                      <p className="text-[24px] font-normal text-charcoal lg:text-[22px] md:text-[20px] sm:text-[18px]">
+                        {program.title}
+                      </p>
+                      <p className="text-[20px] font-normal text-gray-600_01 lg:text-[18px] md:text-[16px]">
+                        {program.time}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-start gap-2">
+                      <p className="text-[20px] font-normal text-gray-600_01 lg:text-[18px] md:text-[16px]">
+                        {program.description}
+                      </p>
+                    </div>
                   </div>
-                </React.Fragment>
-              ))}
-            />
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div className="container-xs flex items-center justify-between w-full mt-6 md:px-5">

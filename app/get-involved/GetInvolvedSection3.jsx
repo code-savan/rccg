@@ -10,7 +10,8 @@ import {
   Img,
 } from "../../components";
 import metadata from "libphonenumber-js/metadata.full.json";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { formatTextWithNewlines } from "@/lib/textUtils";
 
 const dropDownOptions = [
   { label: "CANADA", value: "CANADA" },
@@ -24,6 +25,35 @@ const dropDownOptions = [
 ];
 
 export default function GetInvolvedSection3() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/get-involved/contact');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch contact section data');
+        }
+        
+        const result = await response.json();
+        console.log('Contact data:', result);
+        setData(result);
+      } catch (err) {
+        console.error('Error fetching contact section data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const countryOptions = React.useMemo(() => {
     return Object.entries(metadata.countries).map(([code, data]) => {
       const callingCode = `${data[0]}`;
@@ -50,7 +80,10 @@ export default function GetInvolvedSection3() {
   return (
     <>
       {/* get involved section */}
-      <div className="flex min-h-[800px] flex-col justify-center bg-[url(/images/img_group_138.png)] bg-cover bg-center bg-no-repeat py-16 md:py-12 sm:py-10 sm:mt-12 md:mt-20 lg:mt-24">
+      <div 
+        className="flex min-h-[800px] flex-col justify-center bg-cover bg-center bg-no-repeat py-16 md:py-12 sm:py-10 sm:mt-12 md:mt-20 lg:mt-24"
+        style={{ backgroundImage: `url(${data?.backgroundImage || "/images/img_group_138.png"})` }}
+      >
         <div className="container-xs md:px-5">
           <div className="flex items-start justify-between lg:flex-row md:flex-col gap-10">
             {/* Contact Form Section - Left side */}
