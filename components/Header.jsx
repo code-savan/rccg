@@ -24,7 +24,7 @@ export default function Header({ ...props }) {
       <div className=" w-full flex items-center justify-between gap-5 lg:px-24 md:px-24 sm:px-5">
         <div className="flex items-center justify-start space-x-2">
           <Img
-            src="logo.svg"
+            src="/images/logo.svg"
             width={48}
             height={48}
             alt="Headerlogo"
@@ -33,8 +33,8 @@ export default function Header({ ...props }) {
           <Img
             src={
               pathname === "/"
-                ? "img_header_logo.png"
-                : "img_header_logo_dark.svg"
+                ? "/images/img_header_logo.png"
+                : "/images/img_header_logo_dark.svg"
             }
             width={220}
             height={48}

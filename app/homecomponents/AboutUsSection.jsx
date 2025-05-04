@@ -62,8 +62,22 @@ export default function AboutUsSection() {
     );
   }
 
-  // If no data is available, show nothing
-  if (!data) return null;
+  // Default content
+  const title = data?.title || "About Us";
+  const content = data?.content || `RCCG ROG is a Bible-based, evangelistic, Spirit-empowered
+  church.
+  At RCCG ROG, we're all about people, because God is all about
+  people.
+
+  One of the ways we express our love for Him is through our love
+  for people,
+  and we do this by helping people who come to RCCG ROG to grow in
+  their
+  relationship with the Lord.
+
+  Want to get started? We'd love for you to join us for a
+  service, and we're
+  here to help you get connected.`;
 
   return (
     <>
@@ -76,12 +90,22 @@ export default function AboutUsSection() {
               as="p"
               className="!font-poppins text-[24px] font-medium md:text-[22px]"
             >
-              {data.title}
+              {title}
             </Text>
-            <div 
-              className="mb-[18px] self-stretch text-center font-poppins text-[16px] sm:text-[13px] font-normal leading-[160%]"
-              dangerouslySetInnerHTML={{ __html: formatDisplayText(data.content) }}
-            />
+            <div className="mb-[18px] self-stretch text-center font-poppins text-[16px] sm:text-[13px] font-normal leading-[100%]">
+              <span className="text-gray-400">
+                {content.split("\n\nWant to get started?")[0]}
+              </span>
+              <span className="text-white_color">
+                <>
+                  <br />
+                  Want to get started? We'd love for you to join us for a
+                  service, and we're
+                  <br />
+                  here to help you get connected.
+                </>
+              </span>
+            </div>
           </div>
         </div>
       </div>
