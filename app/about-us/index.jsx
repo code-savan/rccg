@@ -14,200 +14,128 @@ import React, { useEffect, useState } from "react";
 import ImageSlider from "../../components/ImageSlider";
 import { usePageLoading } from "../../hooks/usePageLoading";
 
-const hcm = [
-  {
-    src: "img_dsc_9310.png",
-    alt: "Pastor Bolanle Sowole",
-    title: "Pastor Bolanle Sowole",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9297.png",
-    alt: "Sister Omolade Babalola",
-    title: "Sister Omolade Babalola",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9242.png",
-    alt: "Bro Jide Akinsole",
-    title: "Bro Jide Akinsole",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9206.png",
-    alt: "Dcn. Emmanuel Onakoya",
-    title: "Dcn. Emmanuel Onakoya",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9251.png",
-    alt: "Dcn. Goke Fadeyi",
-    title: "Dcn. Goke Fadeyi",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9350.png",
-    alt: "Dcn. Kolade Omodele",
-    title: "Dcn. Kolade Omodele",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9348.png",
-    alt: "Pastor Gboyega Akanle",
-    title: "Pastor Gboyega Akanle",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9341.png",
-    alt: "PST. Temitope Owoeye",
-    title: "PST. Temitope Owoeye",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9322.png",
-    alt: "Dcn Bamidele Ojo",
-    title: "Dcn Bamidele Ojo",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9284.png",
-    alt: "Dcn. Adeola Tawede",
-    title: "Dcn. Adeola Tawede",
-    subtitle: "Minster",
-  },
-  {
-    src: "img_dsc_9277.png",
-    alt: "Dcn. Abel Makanjuola",
-    title: "Dcn. Abel Makanjuola",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9268.png",
-    alt: "Dr Yemi Ilesanmi",
-    title: "Dr Yemi Ilesanmi",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9256.png",
-    alt: "Pastor Dare Sylvester",
-    title: "Pastor Dare Sylvester",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9245.png",
-    alt: "Dr. Ayo Oshinnowo",
-    title: "Dr. Ayo Oshinnowo",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9408.png",
-    alt: "Bro Soji Toriola",
-    title: "Bro Soji Toriola",
-    subtitle: "Minister",
-  },
-  {
-    src: "img_dsc_9293.png",
-    alt: "Bro Mfon Obot",
-    title: "Bro Mfon Obot",
-    subtitle: "Minister",
-  },
-  {
-    src: "nhjsdkjd1.jpeg",
-    alt: "Pst. Feyisayo Owoeye",
-    title: "Pst. Feyisayo Owoeye",
-    subtitle: "Minister",
-  },
-  {
-    src: "jsdnjbjhosdh.jpeg",
-    alt: "Dcns Eniola Omodele",
-    title: "Dcns Eniola Omodele",
-    subtitle: "Minister",
-  },
-  {
-    src: "osbhsabjhbasi.jpeg",
-    alt: "Dcn Isaac Ademakinwa",
-    title: "Dcn Isaac Ademakinwa",
-    subtitle: "Minister",
-  },
-];
+// Church Ministers state to be fetched from the backend
 
-const ngm = [
-  {
-    src: "img_dsc_9404.png",
-    alt: "Segun Oladeji",
-    title: "Segun Oladeji",
-    subtitle: "Next Gen Minister",
-  },
-  {
-    src: "WhatsApp Image 2025-03-06 at 19.50.11_050ee46d.png",
-    alt: "Janet Oluwayomi",
-    title: "Janet Oluwayomi",
-    subtitle: "",
-  },
-  {
-    src: "WhatsApp Image 2025-03-06 at 19.50.12_313e4a70.png",
-    alt: "Temitope Ann Aluko",
-    title: "Temitope Ann Aluko",
-    subtitle: "Next Gen Minister",
-  },
-  {
-    src: "WhatsApp Image 2025-03-06 at 19.50.12_6dc5a47c.png",
-    alt: "Susanah Amure",
-    title: "Susanah Amure",
-    subtitle: "",
-  },
-];
+// NextGen Ministers state to be fetched from the backend
 
-const hod = [
-  {
-    src: "img_dsc_9396.png",
-    alt: "Oladipupo Baruwa",
-    title: "Oladipupo Baruwa",
-    subtitle: "HOD Protocol",
-  },
-  {
-    src: "img_dsc_9388.png",
-    alt: "Yetunde Ajanaku",
-    title: "Yetunde Ajanaku",
-    subtitle: "HOD Choir",
-  },
-  {
-    src: "img_dsc_9374.png",
-    alt: "Oloyede Amure",
-    title: "Oloyede Amure",
-    subtitle: "HOD Soccer Team",
-  },
-  {
-    src: "img_dsc_9404.png",
-    alt: "Segun Oladeji",
-    title: "Segun Oladeji",
-    subtitle: "HOD Publication",
-  },
-  {
-    src: "img_dsc_9420.png",
-    alt: "David Ayodele",
-    title: "David Ayodele",
-    subtitle: "HOD Drama",
-  },
-  {
-    src: "img_dsc_9495.png",
-    alt: "Pastor(Mrs) F.O Balogun",
-    title: "Pastor(Mrs) F.O Balogun",
-    subtitle: "HOD Sanctuary",
-  },
-  {
-    src: "img_dsc_9511.png",
-    alt: "Bro Ademola Karonwi",
-    title: "Bro Ademola Karonwi",
-    subtitle: "HOD Children's Dept.",
-  },
-];
+// Department Heads state to be fetched from the backend
+
 
 export default function AboutUsPage() {
   const [isClient, setIsClient] = useState(false);
+  const [ministers, setMinisters] = useState({});
+  const [churchMinisters, setChurchMinisters] = useState([]);
+  const [departmentHeads, setDepartmentHeads] = useState([]);
+  const [nextGenMinisters, setNextGenMinisters] = useState([]);
+  const [worshipData, setWorshipData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   usePageLoading();
 
+  // Fetch ministers data
   useEffect(() => {
+    const fetchMinisters = async () => {
+      try {
+        const response = await fetch('/api/about-us/ministers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch ministers data');
+        }
+        const result = await response.json();
+        console.log("ministers", result);
+        setMinisters(result);
+      } catch (err) {
+        console.error('Error fetching ministers data:', err);
+        setError(err.message);
+      }
+    };
+
+    const fetchChurchMinisters = async () => {
+      try {
+        const response = await fetch('/api/about-us/church-ministers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch church ministers data');
+        }
+        const result = await response.json();
+        // Transform the data to match the format expected by ImageSlider
+        const formattedData = (result.churchMinisters || []).map(minister => ({
+          src: minister.image,
+          alt: minister.name,
+          title: minister.name,
+          subtitle: minister.role
+        }));
+        setChurchMinisters(formattedData);
+      } catch (err) {
+        console.error('Error fetching church ministers data:', err);
+        setError(err.message);
+      }
+    };
+
+    const fetchDepartmentHeads = async () => {
+      try {
+        const response = await fetch('/api/about-us/department-heads');
+        if (!response.ok) {
+          throw new Error('Failed to fetch department heads data');
+        }
+        const result = await response.json();
+        // Transform the data to match the format expected by ImageSlider
+        const formattedData = (result.departmentHeads || []).map(head => ({
+          src: head.image,
+          alt: head.name,
+          title: head.name,
+          subtitle: head.role
+        }));
+        setDepartmentHeads(formattedData);
+      } catch (err) {
+        console.error('Error fetching department heads data:', err);
+        setError(err.message);
+      }
+    };
+
+    const fetchNextGenMinisters = async () => {
+      try {
+        const response = await fetch('/api/about-us/nextgen-ministers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch NextGen ministers data');
+        }
+        const result = await response.json();
+        // Transform the data to match the format expected by ImageSlider
+        const formattedData = (result.ministers || []).map(minister => ({
+          src: minister.image,
+          alt: minister.name,
+          title: minister.name,
+          subtitle: minister.role
+        }));
+        setNextGenMinisters(formattedData);
+      } catch (err) {
+        console.error('Error fetching NextGen ministers data:', err);
+        setError(err.message);
+      }
+    };
+
+    const fetchWorshipData = async () => {
+      try {
+        const response = await fetch('/api/about-us/worship-with-us');
+        if (!response.ok) {
+          throw new Error('Failed to fetch worship with us data');
+        }
+        const result = await response.json();
+        setWorshipData(result);
+      } catch (err) {
+        console.error('Error fetching worship with us data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Fetch all data when component mounts
+    fetchMinisters();
+    fetchChurchMinisters();
+    fetchDepartmentHeads();
+    fetchNextGenMinisters();
+    fetchWorshipData();
+
     setIsClient(true);
   }, []);
 
@@ -232,56 +160,37 @@ export default function AboutUsPage() {
                   as="h2"
                   className="text-[40px] font-semibold text-center lg:text-[36px] md:text-[32px] sm:text-[28px]"
                 >
-                  Our Ministers
+                  {ministers.heading}
                 </Heading>
                 <Text
                   as="p"
                   className="self-stretch text-center !font-poppins text-[16px] font-light leading-[130%] !text-charcoal md:text-[15px] sm:text-[14px]"
                 >
-                  Join us as we celebrate the beginning of forever. With love in
-                  their hearts and joy to share, Nina and Chris invite you to
-                  witness their journey as they say "I do."
+                  {ministers.description || "ddd"}
                 </Text>
               </div>
               <div className="flex gap-8 self-stretch md:flex-col">
-                <div className="relative group overflow-hidden rounded-[15px] w-full cursor-pointer">
-                  <UserProfileImage
-                    userImage="img_dsc_5797.png"
-                    className="w-full"
-                  />
-                  <div
-                    className="absolute bottom-0 left-0 w-full h-[30%] bg-[#181818] flex flex-col items-center justify-center
-                    translate-y-full group-hover:translate-y-0
-                    sm:translate-y-0
-                    transition-transform duration-300 ease-in-out"
-                  >
-                    <p className="text-[20px] text-white_color font-medium">
-                      Pastor J.K Balogun
-                    </p>
-                    <p className="text-[13.5px] text-white_color">
-                      Head Pastor
-                    </p>
-                  </div>
-                </div>
-                <div className="relative group overflow-hidden rounded-[15px] w-full cursor-pointer">
-                  <UserProfileImage
-                    userImage="img_dsc_9587.png"
-                    className="w-full"
-                  />
-                  <div
-                    className="absolute bottom-0 left-0 w-full h-[30%] bg-[#181818] flex flex-col items-center justify-center
-                    translate-y-full group-hover:translate-y-0
-                    sm:translate-y-0
-                    transition-transform duration-300 ease-in-out"
-                  >
-                    <p className="text-[20px] text-white_color font-medium">
-                      Pastor(Mrs) F.O Balogun
-                    </p>
-                    <p className="text-[13.5px] text-white_color">
-                      Head Pastor
-                    </p>
-                  </div>
-                </div>
+                {ministers.ministers && ministers.ministers.filter(minister => minister.name).map((minister, index) => (
+                    <div key={index} className="relative group overflow-hidden rounded-[15px] w-full cursor-pointer">
+                      <UserProfileImage
+                        userImage={minister.image || "/images/default-minister.png"}
+                        className="w-full"
+                      />
+                      <div
+                        className="absolute bottom-0 left-0 w-full h-[30%] bg-[#181818] flex flex-col items-center justify-center
+                        translate-y-full group-hover:translate-y-0
+                        sm:translate-y-0
+                        transition-transform duration-300 ease-in-out"
+                      >
+                        <p className="text-[20px] text-white_color font-medium">
+                          {minister.name}
+                        </p>
+                        <p className="text-[13.5px] text-white_color">
+                          {minister.role}
+                        </p>
+                      </div>
+                    </div>
+                ))}
               </div>
               {/* <Link href="/about-us">
               <Button
@@ -296,22 +205,57 @@ export default function AboutUsPage() {
           </div>
         </div>
 
-        {isClient && (
+        {/* Display loading state */}
+        {isClient && loading && (
+          <div className="flex justify-center items-center py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        )}
+
+        {/* Display error state */}
+        {isClient && error && (
+          <div className="flex justify-center items-center py-10">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <strong className="font-bold">Error!</strong>
+              <span className="block sm:inline"> {error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Display content when loaded */}
+        {isClient && !loading && !error && (
           <div className="flex flex-col gap-44 md:gap-[132px] sm:gap-[88px] mt-[100px]">
+            {/* Church Ministers Section */}
             <div className="flex flex-col gap-16 sm:gap-8">
-              <ImageSlider images={hcm} title={"Church Ministers"} />
-            </div>
-            <div className="flex flex-col gap-16 sm:gap-8">
-              <ImageSlider images={hod} title={"Head of Departments"} />
-            </div>
-            {/* about us section */}
-            <AboutUsSection4 />
-            {/* about us section */}
-            <AboutUsSection3 />
-            <div className="flex flex-col gap-16 sm:gap-8">
-              <ImageSlider images={ngm} title={"Next Gen Ministers"} />
+              <ImageSlider
+                images={churchMinisters}
+                title={"Church Ministers"}
+              />
             </div>
 
+            {/* Department Heads Section */}
+            <div className="flex flex-col gap-16 sm:gap-8">
+              <ImageSlider
+                images={departmentHeads}
+                title={"Head of Departments"}
+              />
+            </div>
+
+            {/* Departments Section */}
+            <AboutUsSection4 />
+
+            {/* NextGen Ministry Section */}
+            <AboutUsSection3 />
+
+            {/* NextGen Ministers Section */}
+            <div className="flex flex-col gap-16 sm:gap-8">
+              <ImageSlider
+                images={nextGenMinisters}
+                title={"Next Gen Ministers"}
+              />
+            </div>
+
+            {/* Worship With Us Section */}
             <div className="container-xs mt-[196px] px-[30px] md:mt-24 sm:mt-16 md:px-8 sm:px-5">
               <div className="ml-3 flex items-center md:ml-0 md:flex-col md:gap-10">
                 <div className="flex w-[38%] flex-col items-start gap-[30px] md:w-full md:items-center">
@@ -320,48 +264,84 @@ export default function AboutUsPage() {
                     as="p"
                     className="ml-9 text-center text-[40px] font-normal leading-[100%] !text-charcoal md:ml-0 lg:text-[36px] md:text-[32px] sm:text-[28px]"
                   >
-                    <>
-                      Come worship
-                      <br />
-                      with us
-                    </>
+                    {worshipData?.heading ? (
+                      <>{worshipData.heading.replace(/\\n/g, '\n')}</>
+                    ) : (
+                      <>
+                        Come worship
+                        <br />
+                        with us
+                      </>
+                    )}
                   </Text>
                   <Text
                     as="p"
                     className="text-center text-[16px] font-normal leading-[130%] !text-gray-600_01 md:text-[15px] sm:text-[14px]"
                   >
-                    <>
-                      Come worship with us every Sunday.
-                      <br />
-                      We promise you'll be filled with the holy spirit.
-                    </>
+                    {worshipData?.description ? (
+                      <>{worshipData.description.replace(/\\n/g, '\n')}</>
+                    ) : (
+                      <>
+                        Come worship with us every Sunday.
+                        <br />
+                        We promise you'll be filled with the holy spirit.
+                      </>
+                    )}
                   </Text>
-                  <Link
-                    href="https://www.youtube.com/@RCCGRodofGodParish"
-                    className="flex"
-                  >
-                    <Button
-                      size="xs"
-                      shape="round"
-                      className="ml-[74px] min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] md:ml-0 sm:px-5 hover:bg-[#4D88FF] hover:text-white_color hover:border-[#4D88FF] transition-colors"
-                    >
-                      RCCG Live
-                    </Button>
-                  </Link>
-                  <Link
-                    href="https://www.youtube.com/@RCCGRodofGodParish"
-                    className="flex"
-                  >
-                    <Button
-                      size="xs"
-                      shape="round"
-                      className="ml-[74px] min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[29px] md:ml-0 sm:px-5 hover:bg-[#4D88FF] hover:text-white_color hover:border-[#4D88FF] transition-colors"
-                    >
-                      Next Gen Live
-                    </Button>
-                  </Link>
+
+                  {/* Render buttons from API data if available */}
+                  {worshipData?.buttons && Array.isArray(worshipData.buttons) && worshipData.buttons.length > 0 ? (
+                    // Map through the buttons array from the API
+                    worshipData.buttons.map((button, index) => (
+                      <Link
+                        key={button.id || index}
+                        href={button.link || "https://www.youtube.com/@RCCGRodofGodParish"}
+                        className="flex"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button
+                          size="xs"
+                          shape="round"
+                          className="ml-[74px] min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] md:ml-0 sm:px-5 hover:bg-[#4D88FF] hover:text-white_color hover:border-[#4D88FF] transition-colors"
+                        >
+                          {button.text || "Watch Live"}
+                        </Button>
+                      </Link>
+                    ))
+                  ) : (
+                    <>
+                      <Link
+                        href="https://www.youtube.com/@RCCGRodofGodParish"
+                        className="flex"
+                      >
+                        <Button
+                          size="xs"
+                          shape="round"
+                          className="ml-[74px] min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[33px] md:ml-0 sm:px-5 hover:bg-[#4D88FF] hover:text-white_color hover:border-[#4D88FF] transition-colors"
+                        >
+                          RCCG Live
+                        </Button>
+                      </Link>
+                      <Link
+                        href="https://www.youtube.com/@RCCGRodofGodParish"
+                        className="flex"
+                      >
+                        <Button
+                          size="xs"
+                          shape="round"
+                          className="ml-[74px] min-w-[196px] rounded-[12px] border border-solid border-gray-400 px-[29px] md:ml-0 sm:px-5 hover:bg-[#4D88FF] hover:text-white_color hover:border-[#4D88FF] transition-colors"
+                        >
+                          Next Gen Live
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
-                <div className="flex h-[630px] flex-1 items-start justify-center rounded-[20px] bg-[url(/images/img_verse.png)] bg-cover bg-no-repeat px-14 py-[194px] md:h-auto md:w-full md:py-16 sm:py-12 sm:px-5">
+                <div
+                  className="flex h-[630px] flex-1 items-start justify-center rounded-[20px] bg-cover bg-no-repeat px-14 py-[194px] md:h-auto md:w-full md:py-16 sm:py-12 sm:px-5"
+                  style={{ backgroundImage: `url(${worshipData?.image || '/images/img_verse.png'})` }}
+                >
                   <div className="mb-3 flex w-[66%] justify-center rounded-[20px] border border-solid border-gray-400 bg-gray-100 px-[38px] py-[66px] md:w-full md:px-6 md:py-10 sm:py-8 sm:px-5">
                     <Text
                       size="textmd"
@@ -369,12 +349,16 @@ export default function AboutUsPage() {
                       className="w-full text-[20px] font-normal leading-[130%] !text-charcoal lg:text-[18px] md:text-[16px]"
                     >
                       <span className="text-gray-600_01">
-                        <>
-                          For where two or three gather in my
-                          <br className="md:hidden" />
-                          name, there am I with them."
-                          <br />
-                        </>
+                        {worshipData?.bibleVerse ? (
+                          <>{worshipData.bibleVerse.replace(/\\n/g, '\n')}</>
+                        ) : (
+                          <>
+                            For where two or three gather in my
+                            <br className="md:hidden" />
+                            name, there am I with them."
+                            <br />
+                          </>
+                        )}
                       </span>
                       <span className="text-charcoal">
                         <>
@@ -382,7 +366,7 @@ export default function AboutUsPage() {
                         </>
                       </span>
                       <span className="font-medium text-charcoal">
-                        — Matthew 18:20 (NIV)
+                        — {worshipData?.bibleReference || "Matthew 18:20 (NIV)"}
                       </span>
                     </Text>
                   </div>
