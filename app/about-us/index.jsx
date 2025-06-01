@@ -42,7 +42,7 @@ export default function AboutUsPage() {
           throw new Error('Failed to fetch ministers data');
         }
         const result = await response.json();
-        console.log("ministers", result);
+        // console.log("ministers", result);
         setMinisters(result);
       } catch (err) {
         console.error('Error fetching ministers data:', err);
@@ -99,8 +99,9 @@ export default function AboutUsPage() {
           throw new Error('Failed to fetch NextGen ministers data');
         }
         const result = await response.json();
+        console.log("nextgen ministers", result);
         // Transform the data to match the format expected by ImageSlider
-        const formattedData = (result.ministers || []).map(minister => ({
+        const formattedData = (result.nextGenMinisters || []).map(minister => ({
           src: minister.image,
           alt: minister.name,
           title: minister.name,

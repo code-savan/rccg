@@ -121,12 +121,13 @@ export default function AboutUsSection4() {
       try {
         setLoading(true);
         const response = await fetch('/api/about-us/departments');
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch departments data');
         }
-        
+
         const result = await response.json();
+        console.log("departments", result);
         setData(result);
       } catch (err) {
         console.error('Error fetching departments data:', err);
@@ -143,7 +144,7 @@ export default function AboutUsSection4() {
   let title = data?.title || "OUR DEPARTMENTS";
   let description = data?.description || "At RCCG Rod of God Parish, our various departments serve to strengthen the church and community. There's a place for everyone to serve, grow, and make an impact!";
   const departments = data?.departments || serviceDepartmentGrid;
-  
+
   // Handle escaped newlines
   title = title.replace(/\\n/g, '\n');
   description = description.replace(/\\n/g, '\n');
@@ -172,12 +173,12 @@ export default function AboutUsSection4() {
           <div className="grid grid-cols-2 gap-[26px] gap-y-[146px] md:grid-cols-1 md:gap-y-[90px] sm:gap-y-[70px]">
             <Suspense fallback={<div>Loading feed...</div>}>
               {departments.map((d, index) => (
-                <UserProfile 
-                  userImage={d.userImage || d.image}
-                  userTitle={d.userTitle || d.title}
-                  userDescription={formatTextWithNewlines(d.userDescription || d.description, { noWrapper: true })}
-                  key={"aboutUs" + index} 
-                  className="w-full" 
+                <UserProfile
+                  userImage={d.image}
+                  userTitle={d.name}
+                  userDescription={formatTextWithNewlines(d.description, { noWrapper: true })}
+                  key={"aboutUs" + index}
+                  className="w-full"
                 />
               ))}
             </Suspense>
